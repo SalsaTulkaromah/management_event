@@ -1,0 +1,163 @@
+<%- contentFor('HeaderCss') %>
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<%- contentFor('body') %>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-header container-fluid">
+        <div class="row g-2 justify-content-between align-items-center">
+          <div class="col-md-auto">
+            <h5 class="card-title mb-0">DAFTAR PARTICIPANTS</h5>
+          </div>
+          <div class="col-md-auto">
+            <div class="d-flex gap-2" id="datatable-buttons">
+              <!-- Tombol Export akan dimasukkan oleh DataTables -->
+              <button type="button" class="btn btn-soft-success btn-sm" onclick="window.location.href='/participants/add'">
+                <i class="ri-user-add-line align-bottom me-1"></i> Add Participant
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <table id="participantsTable" class="table table-bordered dt-responsive nowrap table-striped text-center align-middle" style="width:100%">
+          <thead style="background-color: #3f4f88;" class="text-white">
+            <tr>
+              <th class="text-center align-middle">NAMA</th>
+              <th class="text-center align-middle">INSTANSI</th>
+              <th class="text-center align-middle">E-MAIL</th>
+              <th class="text-center align-middle">PHONE NUMBER</th>
+              <th class="text-center align-middle">STATUS</th>
+              <th class="text-center align-middle">QR CODE</th>
+              <th class="text-center align-middle">ACTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Baris diisi lewat AJAX -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- contentFor('FooterJs') %>
+<script>
+  $(document).ready(function () {
+    const table = $('#participantsTable').DataTable({
+      ajax: {
+        url: '/participants/getParticipants',
+        dataSrc: ''
+      },
+      columns: [
+        { data: 'name' },
+        { data: 'company_name' },
+        { data: 'email' },
+        { data: 'phone' },
+        {
+          data: 'status',
+          render: function (data) {
+            let badgeClass = 'bg-secondary';
+            if (data === 'approved') badgeClass = 'bg-success';
+            else if (data === 'rejected') badgeClass = 'bg-danger';
+            return `<span class="badge ${badgeClass} text-uppercase">${data}</span>`;
+          }
+        },
+        {
+          data: 'qrcode',
+          render: function (data) {
+            return `<span class="badge bg-secondary">${data}</span>`;
+          }
+        },
+        {
+          data: null,
+          render: function (data, type, row) {
+            let buttons = `<button class="btn btn-outline-primary btn-icon waves-effect waves-light">
+                <i class="ri-mail-send-line"></i></button>`;
+
+            if (row.status === 'pending') {
+              buttons += `
+                <button type="button" class="btn btn-outline-success btn-icon waves-effect waves-light">
+                  <i class="ri-check-line btn-approve" data-id="${row.id}"></i>
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-icon waves-effect waves-light">
+                  <i class="ri-close-line btn-reject" data-id="${row.id}"></i>
+                </button>`;
+            }
+
+            return buttons;
+          }
+        }
+      ],
+      dom: 'Blfrtip',
+      buttons: [
+        {
+          extend: 'collection',
+          text: 'Export',
+          className: 'btn btn-soft-primary btn-sm',
+          buttons: ['copy', 'csv', 'excel']
+        }
+      ],
+      bDestroy: true,
+      initComplete: function () {
+        table.buttons().container().prependTo('#datatable-buttons');
+      }
+    });
+
+    // Approve
+    $('#participantsTable').on('click', '.btn-approve', function () {
+      const participantId = $(this).data('id');
+      Swal.fire({
+        title: 'Yakin ingin approve peserta ini?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Approve',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+          $.ajax({
+            url: `/participants/approve/${participantId}`,
+            method: 'POST',
+            success: function (res) {
+              Swal.fire('Approved!', res.message || 'Peserta disetujui.', 'success');
+              table.ajax.reload();
+            },
+            error: function () {
+              Swal.fire('Error', 'Gagal memproses permintaan.', 'error');
+            }
+          });
+        }
+      });
+    });
+
+    // Reject
+    $('#participantsTable').on('click', '.btn-reject', function () {
+      const participantId = $(this).data('id');
+      Swal.fire({
+        title: 'Yakin ingin reject peserta ini?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Reject',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+          $.ajax({
+            url: `/participants/reject/${participantId}`,
+            method: 'POST',
+            success: function (res) {
+              Swal.fire('Ditolak!', res.message || 'Peserta ditolak.', 'info');
+              table.ajax.reload();
+            },
+            error: function () {
+              Swal.fire('Error', 'Gagal memproses permintaan.', 'error');
+            }
+          });
+        }
+      });
+    });
+  });
+</script>

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable">
+
+<head>
+
+    <meta charset="utf-8" />
+    <title> <%-title%> | Management Event</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="Themesbrand" name="author" />
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="assets/images/logo-favicon.ico">
+    <%- HeaderCss %>
+
+<%- include ('./head-css.ejs') %>
+<style>
+    #preloader_xx{
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--vz-card-bg-custom);
+        z-index: 9999;
+    }
+</style>
+</head>
+
+
+<body>
+    <div id="layout-wrapper">
+        <%- include ('./topbar') %>
+        <%- include ('./sidebar') %>
+        <div class="main-content">
+            <div class="page-content">
+                <div class="container-fluid">
+                   <%- body%>
+                    <div id="preloader_xx" style="display: none !important; opacity: 0.5 !important;">
+                        <div id="status">
+                            <div class="spinner-border text-primary avatar-sm" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <span style="color: rebeccapurple;">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- container-fluid -->
+            </div>
+            <!-- End Page-content -->
+            <%- include ('./footer') %>
+
+        </div>
+        <!-- end main content-->
+    </div>
+    <!-- END layout-wrapper -->
+    <%- include ('./customizer') %>
+    <%- include ('./vendor-scripts') %>
+    <%- FooterJs %>
+
+    <!-- App js -->
+    <script src="assets/js/app.js"></script>
+</body>
+
+</html>

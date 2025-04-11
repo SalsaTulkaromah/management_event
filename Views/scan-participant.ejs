@@ -1,0 +1,162 @@
+<%- contentFor('HeaderCss') %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<%- contentFor('body') %>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">SCAN PARTICIPANTS</h5>
+      </div>
+      <div class="card-body">
+        <div class="row gy-4">
+          <!-- Scanner Kamera -->
+          <div class="col-md-6">
+            <div class="border rounded p-3 shadow-sm bg-white">
+              <div id="reader" style="width: 100%;"></div>
+              <div class="text-center mt-2">
+                <a href="#" onclick="scanFile()" class="text-primary fw-medium">Scan an Image File</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Data Partisipan -->
+          <div class="col-md-6">
+            <div class="border rounded p-4 shadow-sm bg-light text-center">
+              <h4 id="participant-name" class="text-success fw-bold"></h4>
+              <p id="participant-company" class="text-muted mb-2"></p>
+              <div id="scan-note" class="text-success fw-medium"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TABEL HASIL KEHADIRAN -->
+<div class="row mt-4">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">DAFTAR HADIR PARTICIPANTS</h5>
+        <span class="badge bg-success fs-sm">Total Attendance: <span id="attendance-count">0</span></span>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="participantTable" class="table table-bordered dt-responsive nowrap table-striped text-center align-middle w-100">
+            <thead style="background-color: #3f4f88;" class="text-white"class="table-primary">
+              <tr>
+                <th class="text-center align-middle">NO</th>
+                <th class="text-center align-middle">NAME</th>
+                <th class="text-center align-middle">E-MAIL</th>
+                <th class="text-center align-middle">PHONE NUMBER</th>
+                <th class="text-center align-middle">ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data akan diisi via AJAX -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- contentFor('FooterJs') %>
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+  let html5QrcodeScanner;
+  let attendanceTable;
+  let scanningLocked = false;
+
+  $(document).ready(function () {
+    attendanceTable = $('#participantTable').DataTable({
+      ajax: '/scan/getAttendanceList',
+      columns: [
+        {
+          data: null,
+          render: (data, type, row, meta) => meta.row + 1
+        },
+        { data: 'name' },
+        { data: 'email' },
+        { data: 'phone' },
+        {
+          data: null,
+          render: () => `<span class="badge bg-success">Present</span>`
+        }
+      ]
+    });
+
+    html5QrcodeScanner = new Html5Qrcode("reader");
+    Html5Qrcode.getCameras().then(devices => {
+      if (devices && devices.length) {
+        startScanner(devices[0].id);
+      }
+    });
+
+    updateAttendanceCount();
+  });
+
+  function startScanner(deviceId) {
+    html5QrcodeScanner.start(
+      deviceId,
+      { fps: 10, qrbox: 250 },
+      function (qrCodeMessage) {
+        if (scanningLocked) return;
+        scanningLocked = true;
+        $('#scan-note').text('⏳ Memproses scan...');
+
+        $.ajax({
+          url: '/scan/findParticipantByQRCode',
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({ qrcode: qrCodeMessage }),
+          success: function (data) {
+            if (data.success || data.alreadyScanned) {
+              $('#participant-name').text(data.participant.name);
+              $('#participant-company').text(data.participant.company_name || '');
+              $('#scan-note').text(data.success
+                ? '✅ Scan berhasil. Silakan mengikuti acara.'
+                : '⚠️ Anda sudah tercatat hadir sebelumnya.');
+
+              attendanceTable.ajax.reload(null, false);
+              updateAttendanceCount();
+            } else {
+              $('#participant-name').text('Peserta tidak ditemukan');
+              $('#participant-company').text('');
+              $('#scan-note').text('❌ QR Code tidak valid atau tidak terdaftar.');
+            }
+
+            setTimeout(() => {
+              scanningLocked = false;
+            }, 3000);
+          },
+          error: function () {
+            $('#scan-note').text('❌ Gagal memproses scan.');
+            scanningLocked = false;
+          }
+        });
+      }
+    );
+  }
+
+  function updateAttendanceCount() {
+    $.get('/scan/getAttendanceList', function (res) {
+      $('#attendance-count').text(res.data.length);
+    });
+  }
+
+  function scanFile() {
+    html5QrcodeScanner.scanFile().then(decodedText => {
+      alert("Decoded text: " + decodedText);
+    }).catch(err => {
+      alert("Failed to scan: " + err);
+    });
+  }
+</script>
