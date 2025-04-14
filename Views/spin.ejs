@@ -1,5 +1,117 @@
 <%- contentFor('HeaderCss') %>
+<style>
+  #wheelCanvas {
+    width: 400px;
+    height: 400px;
+    margin: 0 auto;
+  }
+
+  #spinButton {
+    display: block;
+    margin: 20px auto;
+    font-size: 1.2rem;
+  }
+
+  #winnerDisplay {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-top: 20px;
+    font-weight: bold;
+  }
+
+  .wheel-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+</style>
 
 <%- contentFor('body') %>
-<div>Ini Halaman Spin The Wheel</div>
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title text-center">Spin The Wheel - Lucky Draw</h5>
+      </div>
+      <div class="card-body wheel-container">
+        <canvas id="wheelCanvas"></canvas>
+        <button id="spinButton" class="btn btn-primary">SPIN</button>
+        <div id="winnerDisplay"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <%- contentFor('FooterJs') %>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.11.3/dist/gsap.min.js"></script>
+<script>
+  let participants = [];
+  let usedWinners = [];
+
+  async function fetchAttendedParticipants() {
+    try {
+      const res = await fetch('/attendance/getAttendanceList');
+      const data = await res.json();
+      if (data.success) {
+        participants = data.data.map(p => p.name); // Ganti 'name' sesuai kolom di database
+        drawWheel();
+      }
+    } catch (err) {
+      console.error("Error fetching participants:", err);
+    }
+  }
+
+  const canvas = document.getElementById('wheelCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = 400;
+  canvas.height = 400;
+  const radius = canvas.width / 2;
+
+  function drawWheel() {
+    const segmentAngle = 2 * Math.PI / participants.length;
+    participants.forEach((name, i) => {
+      const angle = i * segmentAngle;
+      ctx.beginPath();
+      ctx.moveTo(radius, radius);
+      ctx.arc(radius, radius, radius, angle, angle + segmentAngle);
+      ctx.fillStyle = `hsl(${(i * 360) / participants.length}, 80%, 60%)`;
+      ctx.fill();
+      ctx.save();
+      ctx.translate(radius, radius);
+      ctx.rotate(angle + segmentAngle / 2);
+      ctx.textAlign = "right";
+      ctx.fillStyle = "#fff";
+      ctx.font = "14px Arial";
+      ctx.fillText(name, radius - 10, 5);
+      ctx.restore();
+    });
+  }
+
+  function spinWheel() {
+    if (participants.length === 0) return alert("No participants!");
+
+    const remaining = participants.filter(p => !usedWinners.includes(p));
+    if (remaining.length === 0) return alert("All participants have won!");
+
+    const selected = remaining[Math.floor(Math.random() * remaining.length)];
+    const index = participants.indexOf(selected);
+    const segmentAngle = 360 / participants.length;
+    const stopAngle = (360 - (index * segmentAngle)) + (360 * 5); // 5 full spins
+
+    gsap.to("#wheelCanvas", {
+      rotation: stopAngle,
+      duration: 5,
+      ease: "power4.out",
+      onUpdate: function () {
+        canvas.style.transform = `rotate(${this.targets()[0]._gsTransform.rotation}deg)`;
+      },
+      onComplete: function () {
+        usedWinners.push(selected);
+        document.getElementById('winnerDisplay').innerText = `🎉 Winner: ${selected} 🎉`;
+      }
+    });
+  }
+
+  document.getElementById('spinButton').addEventListener('click', spinWheel);
+  fetchAttendedParticipants();
+</script>

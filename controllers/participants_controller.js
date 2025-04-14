@@ -60,7 +60,7 @@ exports.getParticipants = async function (req, res) {
 
     const mailOptions = {
       from: `"PT. Sindigilive Teknologi Kreatif" <${process.env.GMAIL_USER}>`,
-      to: participant.email,
+      to: "anggisaskia01@gmail.com",//participant.email,
       subject: 'Konfirmasi Persetujuan Pendaftaran Anda',
       html: `
         <p>Yth. <b>${participant.name}</b>,</p>
@@ -130,10 +130,10 @@ exports.getParticipants = async function (req, res) {
           pass: process.env.GMAIL_PASS
         }
       });
-  
+      
       const mailOptions = {
         from: `"PT. Sindigilive Teknologi Kreatif" <${process.env.GMAIL_USER}>`,
-        to: participant.email,
+        to: "anggisaskia01@gmail.com",//participant.email,
         subject: 'Informasi Pendaftaran Acara Tech Meetup 2025',
         html: `
         <p>Yth. <b>${participant.name}</b>,</p>
@@ -160,4 +160,94 @@ exports.getParticipants = async function (req, res) {
       client.release();
     }
   };
+
+// Ambil semua peserta
+exports.getParticipants = async function (req, res) {
+  try {
+    const result = await db.query(`
+      SELECT id, name, company_name, email, phone, status, qrcode
+      FROM tbl_participants 
+      ORDER BY id DESC
+    `);
+
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error("Error fetching participants:", error);
+    res.status(500).json({ error: "Terjadi kesalahan saat mengambil data peserta." });
+  }
+};
+
+// Tambah peserta baru
+exports.insertParticipant = async function (req, res) {
+  const { name, company_name, email, phone} = req.body;
+
+  try {
+    const result = await db.query(`
+      INSERT INTO tbl_participants (name, company_name, email, phone)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *
+    `, [name, company_name, email, phone]);
+
+    res.status(201).json({ 
+      message: "Peserta berhasil ditambahkan.",
+      participant: result.rows[0] 
+    });
+  } catch (error) {
+    console.error("Error inserting participant:", error);
+    res.status(500).json({ error: "Terjadi kesalahan saat menambahkan peserta." });
+  }
+};
+
+// Update peserta
+exports.updateParticipant = async function (req, res) {
+  const id = req.params.id;
+  const { name, company_name, email} = req.body;
+
+  try {
+    const result = await db.query(`
+      UPDATE tbl_participants
+      SET name = $1,
+          company_name = $2,
+          email = $3,
+          phone = $4,
+      WHERE id = $5
+      RETURNING *
+    `, [name, company_name, email, phone, id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Peserta tidak ditemukan." });
+    }
+
+    res.status(200).json({ 
+      message: "Peserta berhasil diperbarui.",
+      participant: result.rows[0] 
+    });
+  } catch (error) {
+    console.error("Error updating participant:", error);
+    res.status(500).json({ error: "Terjadi kesalahan saat memperbarui peserta." });
+  }
+};
+
+// Hapus peserta
+exports.deleteParticipant = async function (req, res) {
+  const id = req.params.id;
+
+  try {
+    const result = await db.query(`
+      DELETE FROM tbl_participants
+      WHERE id = $1
+      RETURNING *
+    `, [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Peserta tidak ditemukan." });
+    }
+
+    res.status(200).json({ message: "Peserta berhasil dihapus." });
+  } catch (error) {
+    console.error("Error deleting participant:", error);
+    res.status(500).json({ error: "Terjadi kesalahan saat menghapus peserta." });
+  }
+};
+
   

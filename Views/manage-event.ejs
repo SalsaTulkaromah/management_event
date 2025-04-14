@@ -1,0 +1,182 @@
+<%- contentFor('HeaderCss') %>
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<%- contentFor('body') %>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-header container-fluid">
+        <div class="row g-2 justify-content-between align-items-center">
+          <div class="col-md-auto">
+            <h5 class="card-title mb-0">MANAGE EVENTS</h5>
+          </div>
+          <div class="col-md-auto">
+            <button class="btn btn-soft-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalAddEvent">
+              <i class="ri-calendar-event-line align-bottom me-1"></i> Add Event
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <table id="eventTable" class="table table-bordered dt-responsive nowrap table-striped text-center align-middle" style="width:100%">
+          <thead style="background-color: #3f4f88;" class="text-white">
+            <tr>
+              <th  class="text-center align-middle">NAME</th>
+              <th  class="text-center align-middle">LOCATION</th>
+              <th  class="text-center align-middle">START DATE</th>
+              <th  class="text-center align-middle">END DATE</th>
+              <th  class="text-center align-middle">DESCRIPTION</th>
+              <th  class="text-center align-middle">GUID</th>
+              <th  class="text-center align-middle">ACTION</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Add/Edit Event -->
+<div class="modal fade" id="modalAddEvent" tabindex="-1" aria-labelledby="modalAddEventLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="eventForm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add / Edit Event</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="id" id="eventId">
+          <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" name="title" id="title" required>
+          </div>
+          <div class="mb-3">
+            <label for="location" class="form-label">Location</label>
+            <input type="text" class="form-control" name="location" id="location" required>
+          </div>
+          <div class="mb-3">
+            <label for="start_date" class="form-label">Start Date</label>
+            <input type="date" class="form-control" name="start_date" id="start_date" required>
+          </div>
+          <div class="mb-3">
+            <label for="end_date" class="form-label">End Date</label>
+            <input type="date" class="form-control" name="end_date" id="end_date" required>
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" name="description" id="description" rows="3" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Save Event</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.14/moment-timezone-with-data.min.js"></script>
+<%- contentFor('FooterJs') %>
+<script>
+  $(document).ready(function () {
+    loadEvents();
+
+    $('#eventForm').submit(function (e) {
+      e.preventDefault();
+      const formData = $(this).serialize();
+      $.post('/event/insertEvent', formData, function (res) {
+        if (res.success) {
+          Swal.fire('Success', res.message, 'success');
+          $('#modalAddEvent').modal('hide');
+          loadEvents();
+          $('#eventForm')[0].reset();
+        } else {
+          Swal.fire('Error', res.message, 'error');
+        }
+      });
+    });
+  });
+
+  function loadEvents() {
+    $.post('/event/getEvents', function (res) {
+      const data = res.data;
+      const table = $('#eventTable').DataTable({
+        scrollX: true,
+        data: data,
+        columns: [
+          { data: 'title' },
+          { data: 'location' },
+          { data: 'start_date', render: DataTable.render.datetime('MM/DD/YYYY') },
+          { data: 'end_date', render: DataTable.render.datetime('MM/DD/YYYY') },
+          { data: 'description' },
+          { data: 'guid' },
+          {
+            data: null,
+            render: function (data, type, row) {
+              return `
+                <button class="btn btn-warning btn-sm me-1" onclick="editEventFromEncoded('${btoa(JSON.stringify(row))}')">
+                    <i class="ri-edit-2-line"></i>
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="deleteEvent(${row.id})"><i class="ri-delete-bin-5-line"></i></button>
+              `;
+            }
+          }
+        ],
+        bDestroy: true
+      });
+    });
+  }
+
+  function editEventFromEncoded(encoded) {
+    const decoded = atob(encoded);
+    const eventData = JSON.parse(decoded);
+    editEvent(eventData);
+  }
+
+  function editEvent(eventData) {
+    console.log("Edit event:", eventData);
+
+    // Misalnya mengisi form modal untuk update
+    $('#eventId').val(eventData.id);
+    $('#title').val(eventData.title);
+    $('#location').val(eventData.location);
+    $('#start_date').val(moment(eventData.start_date).format("YYYY-MM-DD"));
+    $('#end_date').val(moment(eventData.end_date).format("YYYY-MM-DD"));
+    $('#description').val(eventData.description);
+    
+    $('#modalAddEvent').modal('show');
+  }
+
+  function deleteEvent(id) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Event will be deleted!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: `/event/deleteEvent/${id}`,
+          method: 'POST',
+          success: function (res) {
+            if (res.success) {
+              Swal.fire('Deleted!', res.message, 'success');
+              loadEvents();
+            } else {
+              Swal.fire('Error', res.message, 'error');
+            }
+          },
+          error: function (err) {
+            Swal.fire('Error', 'Gagal menghubungi server.', 'error');
+          }
+        });
+      }
+    });
+  }
+</script>
+

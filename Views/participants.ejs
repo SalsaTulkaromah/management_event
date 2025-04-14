@@ -13,10 +13,6 @@
           </div>
           <div class="col-md-auto">
             <div class="d-flex gap-2" id="datatable-buttons">
-              <!-- Tombol Export akan dimasukkan oleh DataTables -->
-              <button type="button" class="btn btn-soft-success btn-sm" onclick="window.location.href='/participants/add'">
-                <i class="ri-user-add-line align-bottom me-1"></i> Add Participant
-              </button>
             </div>
           </div>
         </div>
@@ -25,8 +21,8 @@
         <table id="participantsTable" class="table table-bordered dt-responsive nowrap table-striped text-center align-middle" style="width:100%">
           <thead style="background-color: #3f4f88;" class="text-white">
             <tr>
-              <th class="text-center align-middle">NAMA</th>
-              <th class="text-center align-middle">INSTANSI</th>
+              <th class="text-center align-middle">NAME</th>
+              <th class="text-center align-middle">COMPANY</th>
               <th class="text-center align-middle">E-MAIL</th>
               <th class="text-center align-middle">PHONE NUMBER</th>
               <th class="text-center align-middle">STATUS</th>
@@ -75,7 +71,7 @@
           data: null,
           render: function (data, type, row) {
             let buttons = `<button class="btn btn-outline-primary btn-icon waves-effect waves-light">
-                <i class="ri-mail-send-line"></i></button>`;
+                <i class="ri-mail-send-line btn-resend" data-id="${row.id}"></i></button>`;
 
             if (row.status === 'pending') {
               buttons += `
@@ -114,6 +110,32 @@
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Ya, Approve',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+          $.ajax({
+            url: `/participants/approve/${participantId}`,
+            method: 'POST',
+            success: function (res) {
+              Swal.fire('Approved!', res.message || 'Peserta disetujui.', 'success');
+              table.ajax.reload();
+            },
+            error: function () {
+              Swal.fire('Error', 'Gagal memproses permintaan.', 'error');
+            }
+          });
+        }
+      });
+    });
+
+    $('#participantsTable').on('click', '.btn-resend', function () {
+      const participantId = $(this).data('id');
+      Swal.fire({
+        title: 'Yakin ingin mengirim email peserta ini?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Kirim Ulang',
         cancelButtonText: 'Batal'
       }).then((result) => {
         if (result.isConfirmed) {

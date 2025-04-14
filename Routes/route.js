@@ -121,4 +121,12 @@ route.get('/manage-feedbackresponses', (req, res) => {
     });
 });
 
+route.get('/manage-event', (req, res) => {
+    res.render('manage-event', {
+        title: 'Manage Event',
+        page_title: 'Manage Event',
+        folder: 'Event'
+    });
+});
+
 module.exports = route;

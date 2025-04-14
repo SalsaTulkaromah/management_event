@@ -5,7 +5,11 @@ const route = require('./Routes/route');
 const LoginRouter = require('./Routes/api/auth');
 const RegisterRouter = require('./Routes/api/registerRoutes');
 const ParticipantsRouter = require('./Routes/api/participantsRoutes');
+const attendanceRoutes = require('./Routes/api/attendanceRoutes');
 const scanRoutes = require('./Routes/api/scanRoutes');
+const souvenirExchangeRoutes = require('./Routes/api/souvenirExchangeRoutes');
+const eventRoutes = require('./Routes/api/eventRoutes');
+const surveyRoutes = require('./Routes/api/surveyRoutes');
 const expressLayouts = require('express-ejs-layouts');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
@@ -36,7 +40,11 @@ app.use(express.static(__dirname + '/public'));
 app.use('/auth',LoginRouter);
 app.use('/register',RegisterRouter);
 app.use('/participants',ParticipantsRouter);
+app.use('/attendance', attendanceRoutes);
 app.use('/scan',scanRoutes);
+app.use('/event',eventRoutes);
+app.use('/souvenir-exchange', souvenirExchangeRoutes);
+app.use('/survey', surveyRoutes);
 app.use('/', route);
 
 app.use(function(req, res, next) {
