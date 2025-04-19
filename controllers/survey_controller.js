@@ -12,6 +12,20 @@ exports.surveyEvent = async (req, res) => {
             suka_dari_event, saran_event, tertarik_info_lanjutan
         } = req.body;
 
+        // ✅ CEK APAKAH SUDAH MENGISI SURVEI
+        const { rows } = await db.query(
+            'SELECT 1 FROM tbl_survey WHERE participant_id = $1 LIMIT 1',
+            [participant_id]
+        );
+
+        if (rows.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Survei sudah pernah dikirim oleh peserta ini.'
+            });
+        }
+
+        // ✅ JIKA BELUM, LANJUTKAN INSERT
         await db.query(`
             INSERT INTO tbl_survey (
                 participant_id, name, email, institution,
@@ -46,3 +60,4 @@ exports.surveyEvent = async (req, res) => {
         res.status(500).json({ success: false, message: 'Kesalahan server.' });
     }
 };
+

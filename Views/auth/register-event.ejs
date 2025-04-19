@@ -100,9 +100,11 @@
         
         <!-- KIRI -->
         <div class="col-md-5 left-info d-flex flex-column align-items-center justify-content-center text-center">
-          <img src="assets/images/verification-img.png" alt="" class="img-fluid mb-4" style="max-height: 250px; width: auto;">
-          <h2 id="title"></h2>
-          <p id="description-title"></p>
+          <img id="eventImage" src="assets/images/jennifer_logo.webp" alt="" class="img-fluid" style="max-height: 250px; width: auto;">
+          <h1 id="title">NAMA EVENT</h1>
+          <p id="description-title"><em>"Description Event"</em></p>
+          <p id="tanggal_event">📅 5 Nov 2024 | 🕘 09:00 - 17:00 WIB</p>
+          <p id="lokasi">📍 The Ritz-Carlton, Bandung</p>
         </div>
 
         <!-- KANAN -->
@@ -165,8 +167,28 @@
     // Validasi event GUID sebelum tampilkan form
     $.get('/register/validateGuid', { guid: eventGuid }, function (res) {
       if (res.valid) {
+        // Ubah format tanggal dan jam
+        const startDate = new Date(res.event.start_date);
+        const endDate = new Date(res.event.end_date);
+
+        const optionsDate = { day: 'numeric', month: 'short', year: 'numeric' };
+        const optionsTime = { hour: '2-digit', minute: '2-digit' };
+
+        const dateStr = startDate.toLocaleDateString('id-ID', optionsDate);
+        const timeStart = startDate.toLocaleTimeString('id-ID', optionsTime);
+        const timeEnd = endDate.toLocaleTimeString('id-ID', optionsTime);
+
         $('#title').text(res.event.title)
         $('#description-title').text(res.event.description)
+        $('#tanggal_event').html(`📅 ${dateStr} | 🕘 ${timeStart} - ${timeEnd} WIB`);
+        $('#lokasi').html(`📍 ${res.event.location}`)
+        console.log(res.event.image)
+        // Set image jika ada
+        if (res.event.image) {
+          $('#eventImage').attr('src', `/uploads/${res.event.image}`);
+        } else {
+          $('#eventImage').attr('src', 'assets/images/default.webp');
+        }
         // Jika valid, bisa tampilkan form (opsional)
         console.log("GUID valid, lanjutkan registrasi untuk event:", res.event.name);
         $('#registerForm').show(); // pastikan form hidden dulu kalau perlu

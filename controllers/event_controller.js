@@ -1,5 +1,8 @@
 const db = require('../libs/db');
 const dotenv = require('dotenv');
+const path = require('path');
+const multer = require('multer');
+
 dotenv.config({ path: "./config.env" });
 
 exports.getEvents = async function (req, res) {
@@ -22,54 +25,70 @@ exports.getEvents = async function (req, res) {
     }
   };
 
-  exports.insertEvent = async function (req, res) {
-    const { title, location, start_date, end_date, description } = req.body;
+  exports.upsertEvent = async function (req, res) {
+    console.log("Received body:", req.body); // Log body request untuk memastikan data yang diterima
+    const { id, title, location, start_date, end_date, description } = req.body;
+    const image = req.files && req.files.image ? req.files.image : null;
   
-    try {
-      const result = await db.query(`
-        INSERT INTO tbl_events (title, location, start_date, end_date, description)
-        VALUES ($1, $2, $3, $4, $5)
-        RETURNING *
-      `, [title, location, start_date, end_date, description]);
+    let imageName = null;
+    if (image) {
+      imageName = Date.now() + path.extname(image.name);
+      const imagePath = path.join(__dirname, '../public/uploads', imageName);
   
-      res.status(201).json({
-        success: true,
-        message: "Event berhasil ditambahkan.",
-        data: result.rows[0]
+      // Cek apakah file bisa dipindahkan ke folder uploads
+      image.mv(imagePath, (err) => {
+        if (err) {
+          console.error('Error uploading image:', err);
+          return res.status(500).json({ success: false, message: 'Terjadi kesalahan saat mengupload gambar.' });
+        }
+        console.log('Image uploaded successfully:', imagePath);
       });
-    } catch (error) {
-      console.error("Error inserting event:", error);
-      res.status(500).json({ error: "Terjadi kesalahan saat menambahkan event." });
     }
-  };
-
-  
-  exports.updateEvent = async function (req, res) {
-    const id = req.params.id;
-    const { title, location, start_date, end_date, description } = req.body;
   
     try {
-      const result = await db.query(`
-        UPDATE tbl_events 
-        SET title = $1, location = $2, start_date = $3, end_date = $4, description = $5
-        WHERE id = $6
-        RETURNING *
-      `, [title, location, start_date, end_date, description, id]);
+      let result;
   
-      if (result.rowCount === 0) {
-        return res.status(404).json({ success: false, message: "Event tidak ditemukan." });
+      if (id) {
+        console.log("Updating event with ID:", id);
+        const oldEvent = await db.query(`SELECT * FROM tbl_events WHERE id = $1`, [id]);
+        if (oldEvent.rowCount === 0) {
+          return res.status(404).json({ success: false, message: "Event tidak ditemukan." });
+        }
+  
+        const finalImage = imageName || oldEvent.rows[0].image;
+        console.log("Using image:", finalImage);
+        
+        result = await db.query(`
+          UPDATE tbl_events 
+          SET title = $1, location = $2, start_date = $3, end_date = $4, description = $5, image = $6
+          WHERE id = $7
+          RETURNING *
+        `, [title, location, start_date, end_date, description, finalImage, id]);
+  
+        res.status(200).json({
+          success: true,
+          message: "Event berhasil diperbarui.",
+          data: result.rows[0]
+        });
+      } else {
+        console.log("Inserting new event.");
+        result = await db.query(`
+          INSERT INTO tbl_events (title, location, start_date, end_date, description, image)
+          VALUES ($1, $2, $3, $4, $5, $6)
+          RETURNING *
+        `, [title, location, start_date, end_date, description, imageName]);
+  
+        res.status(201).json({
+          success: true,
+          message: "Event berhasil ditambahkan.",
+          data: result.rows[0]
+        });
       }
-  
-      res.status(200).json({
-        success: true,
-        message: "Event berhasil diperbarui.",
-        data: result.rows[0]
-      });
     } catch (error) {
-      console.error("Error updating event:", error);
-      res.status(500).json({ error: "Terjadi kesalahan saat memperbarui event." });
+      console.error("Error inserting/updating event:", error); // Log error lebih jelas
+      res.status(500).json({ success: false, message: "Terjadi kesalahan pada server." });
     }
-  };
+  };  
 
   exports.deleteEvent = async function (req, res) {
     const id = req.params.id;
@@ -91,5 +110,19 @@ exports.getEvents = async function (req, res) {
       console.error("Error deleting event:", error);
       res.status(500).json({ error: "Terjadi kesalahan saat menghapus event." });
     }
-  };
-  
+
+// Setup penyimpanan file
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage });
+
+// Gunakan upload.single('image') di route post event
+router.post('/upsertEvent', upload.single('image'), eventController.upsertEvent);
+};

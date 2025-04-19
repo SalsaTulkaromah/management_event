@@ -28,8 +28,9 @@
         <table id="attendanceTable" class="table table-bordered dt-responsive nowrap table-striped text-center align-middle" style="width:100%">
           <thead style="background-color: #3f4f88;" class="text-white">
             <tr>
+              <th class="text-center align-middle">Event</th>
               <th class="text-center align-middle">NAME</th>
-              <th class="text-center align-middle">COMAPANY</th>
+              <th class="text-center align-middle">COMPANY</th>
               <th class="text-center align-middle">E-MAIL</th>
               <th class="text-center align-middle">PHONE NUMBER</th>
               <th class="text-center align-middle">STATUS</th>
@@ -60,13 +61,18 @@
 
 <script>
   $(document).ready(function () {
-    getDashboardHAV();
+    getDataAttendence();
   });
 
-  async function getDashboardHAV() {
+  async function getDataAttendence() {
+    const selectedEventId = $('#eventFilter').val(); // Ambil event terpilih
+  
     await $.ajax({
       url: "/attendance/getAttendanceList",
       method: "get",
+      data: {
+        event_id: selectedEventId // Kirim sebagai query param
+      },
       dataType: "json",
       beforeSend: function () {
         $("#preloader_xx").show();
@@ -76,64 +82,112 @@
       },
       success: function (resp_data) {
         var data = resp_data.data;
-        console.log(data)
-        if (data.length > 0) {
-          const table = $('#attendanceTable').DataTable({
-            scrollX: true,
-            data: data,
-            columns: [
-              { data: 'name' },
-              { data: 'company_name' },
-              { data: 'email' },
-              { data: 'phone' },
-              {
-                data: 'status',
-                render: function (data) {
-                  const badgeClass = data === 'Attended' ? 'bg-success' : 'bg-danger';
-                  return `<span class="badge ${badgeClass}">${data}</span>`;
-                }
-              },
-              {
-                data: 'scanned_at',
-                render: function (data) {
-                  return data ? new Date(data).toLocaleString() : '-';
-                }
+        console.log(data);
+  
+        const table = $('#attendanceTable').DataTable({
+          scrollX: true,
+          data: data,
+          columns: [
+            { data: 'title' },
+            { data: 'name' },
+            { data: 'company_name' },
+            { data: 'email' },
+            { data: 'phone' },
+            {
+              data: 'status_kehadiran',
+              render: function (data) {
+                const badgeClass = data === 'Attended' ? 'bg-success' : 'bg-danger';
+                return `<span class="badge ${badgeClass}">${data}</span>`;
               }
-            ],
-            dom: 'Blfrtip',
-            buttons: [
-              {
-                extend: 'collection',
-                text: 'Export',
-                className: 'btn btn-soft-primary btn-sm',
-                buttons: ['csv', 'excel']
+            },
+            {
+              data: 'scanned_at',
+              render: function (data) {
+                return data ? new Date(data).toLocaleString() : '-';
               }
-            ],
-            bDestroy: true
-          });
-
-          // Tempatkan tombol export ke container
-          $('#attendanceTable_wrapper .dt-buttons').appendTo('#exportButtonContainer');
-
-          // Tambahkan dropdown filter status di sebelah tombol export
-          const filterHtml = `
-            <select id="statusFilter" class="form-select btn btn-soft-primary btn-sm ms-2" style="width: auto; padding-right: 2rem;">              <option value="">All Status</option>
-              <option value="Attended">Attended</option>
-              <option value="Absent">Absent</option>
-            </select>
-          `;
-          $('#exportButtonContainer').append(filterHtml);
-
-          // Filter kolom status
-          $('#statusFilter').on('change', function () {
-            const val = $(this).val();
-            table.column(4).search(val).draw(); // Kolom status
-          });
-        }
+            }
+          ],
+          dom: 'Blfrtip',
+          buttons: [
+            {
+              extend: 'collection',
+              text: 'Export',
+              className: 'btn btn-soft-primary btn-sm',
+              buttons: ['csv', 'excel']
+            }
+          ],
+          bDestroy: true
+        });
+  
+        // Tempatkan tombol export ke container
+        $('#attendanceTable_wrapper .dt-buttons').appendTo('#exportButtonContainer');
+  
+        // Hapus filter sebelumnya
+        $('#statusFilter').remove();
+        $('#eventFilter').remove();
+  
+        // Tambahkan kembali dropdown filter Event
+        const eventFilterHtml = `
+          <select id="eventFilter" class="form-control btn btn-soft-info btn-sm ms-2" data-choices name="choices-single-default" style="width: auto; display: inline-block;">
+            <option value="">All Events</option>
+          </select>
+        `;
+  
+        // Tambahkan kembali dropdown filter Status
+        const statusFilterHtml = `
+          <select id="statusFilter" class="form-control btn btn-soft-primary btn-sm ms-2" style="width: auto; display: inline-block;">
+            <option value="">All Status</option>
+            <option value="Attended">Attended</option>
+            <option value="Absent">Absent</option>
+          </select>
+        `;
+  
+        $('#exportButtonContainer').append(eventFilterHtml + statusFilterHtml);
+  
+        // Isi dropdown event secara dinamis
+        loadEventFilterOptions(selectedEventId);
+  
+        // Listener filter
+        $('#statusFilter').on('change', function () {
+          const val = $(this).val();
+          table.column(5).search(val).draw();
+        });
+  
+        $('#eventFilter').on('change', function () {
+          getDataAttendence(); // Reload dengan event baru
+        });
       },
       error: function (request, status, error) {
         console.log('code: ' + request.status + "\n" + 'message: ' + request.responseText + "\n" + 'error: ' + error);
       }
     });
   }
+
+  async function loadEventFilterOptions(selectedId = '') {
+    try {
+      const res = await fetch('/event/getEvents', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({}) // kalau butuh kirim parameter bisa ditambahkan di sini
+      });
+  
+      const events = await res.json();
+  
+      const $eventFilter = $('#eventFilter');
+      $eventFilter.empty(); // kosongkan dulu
+      $eventFilter.append(`<option value="">All Events</option>`); // default option
+  
+      events.data.forEach(ev => {
+        const selected = ev.id == selectedId ? 'selected' : '';
+        $eventFilter.append(`<option value="${ev.id}" ${selected}>${ev.title}</option>`);
+      });
+  
+    } catch (err) {
+      console.error('Failed to load events:', err);
+    }
+  }
+  
+  
 </script>

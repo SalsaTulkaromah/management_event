@@ -23,13 +23,14 @@
         <table id="eventTable" class="table table-bordered dt-responsive nowrap table-striped text-center align-middle" style="width:100%">
           <thead style="background-color: #3f4f88;" class="text-white">
             <tr>
-              <th  class="text-center align-middle">NAME</th>
-              <th  class="text-center align-middle">LOCATION</th>
-              <th  class="text-center align-middle">START DATE</th>
-              <th  class="text-center align-middle">END DATE</th>
-              <th  class="text-center align-middle">DESCRIPTION</th>
-              <th  class="text-center align-middle">GUID</th>
-              <th  class="text-center align-middle">ACTION</th>
+              <th>NAME</th>
+              <th>LOCATION</th>
+              <th>START DATE</th>
+              <th>END DATE</th>
+              <th>DESCRIPTION</th>
+              <th>GUID</th>
+              <th>IMAGE</th>
+              <th>ACTION</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -42,7 +43,7 @@
 <!-- Modal Add/Edit Event -->
 <div class="modal fade" id="modalAddEvent" tabindex="-1" aria-labelledby="modalAddEventLabel" aria-hidden="true">
   <div class="modal-dialog">
-    <form id="eventForm">
+    <form id="eventForm" enctype="multipart/form-data">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Add / Edit Event</h5>
@@ -60,15 +61,20 @@
           </div>
           <div class="mb-3">
             <label for="start_date" class="form-label">Start Date</label>
-            <input type="date" class="form-control" name="start_date" id="start_date" required>
+            <input type="datetime-local" class="form-control" name="start_date" id="start_date" required>
           </div>
           <div class="mb-3">
             <label for="end_date" class="form-label">End Date</label>
-            <input type="date" class="form-control" name="end_date" id="end_date" required>
+            <input type="datetime-local" class="form-control" name="end_date" id="end_date" required>
           </div>
           <div class="mb-3">
             <label for="description" class="form-label">Description</label>
             <textarea class="form-control" name="description" id="description" rows="3" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="image" class="form-label">Event Image</label>
+            <input type="file" class="form-control" name="image" id="image">
+            <div id="imagePreview" class="mt-2"></div>
           </div>
         </div>
         <div class="modal-footer">
@@ -78,8 +84,10 @@
     </form>
   </div>
 </div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.14/moment-timezone-with-data.min.js"></script>
+
 <%- contentFor('FooterJs') %>
 <script>
   $(document).ready(function () {
@@ -87,33 +95,84 @@
 
     $('#eventForm').submit(function (e) {
       e.preventDefault();
-      const formData = $(this).serialize();
-      $.post('/event/insertEvent', formData, function (res) {
-        if (res.success) {
-          Swal.fire('Success', res.message, 'success');
-          $('#modalAddEvent').modal('hide');
-          loadEvents();
-          $('#eventForm')[0].reset();
-        } else {
-          Swal.fire('Error', res.message, 'error');
+      const form = $('#eventForm')[0];
+      const formData = new FormData(form);
+
+      $.ajax({
+        url: '/event/upsertEvent',
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (res) {
+          if (res.success) {
+            Swal.fire('Success', res.message, 'success');
+            $('#modalAddEvent').modal('hide');
+            loadEvents();
+            $('#eventForm')[0].reset();
+          } else {
+            Swal.fire('Error', res.message || 'Terjadi kesalahan.', 'error');
+          }
+        },
+        error: function () {
+          Swal.fire('Error', 'Gagal menghubungi server.', 'error');
         }
       });
+    });
+
+    $('#start_date').on('change', function () {
+      const startVal = $(this).val();
+      if (startVal) {
+        const start = new Date(startVal);
+        const end = new Date(start.getTime() + 60 * 60 * 1000);
+        const formatted = end.toISOString().slice(0, 16);
+        $('#end_date').val(formatted);
+      }
+    });
+
+    $('#image').on('change', function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          $('#imagePreview').html(`<img src="${e.target.result}" class="img-thumbnail" style="max-height: 100px;">`);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        $('#imagePreview').html('');
+      }
     });
   });
 
   function loadEvents() {
     $.post('/event/getEvents', function (res) {
       const data = res.data;
-      const table = $('#eventTable').DataTable({
+      $('#eventTable').DataTable({
         scrollX: true,
         data: data,
         columns: [
           { data: 'title' },
           { data: 'location' },
-          { data: 'start_date', render: DataTable.render.datetime('MM/DD/YYYY') },
-          { data: 'end_date', render: DataTable.render.datetime('MM/DD/YYYY') },
+          {
+            data: 'start_date',
+            render: function (data) {
+              return moment(data).format('MM/DD/YYYY HH:mm');
+            }
+          },
+          {
+            data: 'end_date',
+            render: function (data) {
+              return moment(data).format('MM/DD/YYYY HH:mm');
+            }
+          },
           { data: 'description' },
           { data: 'guid' },
+          {
+            data: 'image',
+            render: function (data) {
+              return data ? `<img src="/uploads/${data}" class="img-thumbnail" style="max-height: 60px;">` : '-';
+            }
+          },
           {
             data: null,
             render: function (data, type, row) {
@@ -138,16 +197,19 @@
   }
 
   function editEvent(eventData) {
-    console.log("Edit event:", eventData);
-
-    // Misalnya mengisi form modal untuk update
     $('#eventId').val(eventData.id);
     $('#title').val(eventData.title);
     $('#location').val(eventData.location);
-    $('#start_date').val(moment(eventData.start_date).format("YYYY-MM-DD"));
-    $('#end_date').val(moment(eventData.end_date).format("YYYY-MM-DD"));
+    $('#start_date').val(moment(eventData.start_date).format("YYYY-MM-DDTHH:mm"));
+    $('#end_date').val(moment(eventData.end_date).format("YYYY-MM-DDTHH:mm"));
     $('#description').val(eventData.description);
-    
+
+    if (eventData.image) {
+      $('#imagePreview').html(`<img src="/uploads/${eventData.image}" class="img-thumbnail" style="max-height: 100px;">`);
+    } else {
+      $('#imagePreview').html('');
+    }
+
     $('#modalAddEvent').modal('show');
   }
 
@@ -171,7 +233,7 @@
               Swal.fire('Error', res.message, 'error');
             }
           },
-          error: function (err) {
+          error: function () {
             Swal.fire('Error', 'Gagal menghubungi server.', 'error');
           }
         });
@@ -179,4 +241,3 @@
     });
   }
 </script>
-

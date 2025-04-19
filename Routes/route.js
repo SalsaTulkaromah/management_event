@@ -49,34 +49,10 @@ route.get('/scan-participant', (req, res) => {
     });
 });
 
-route.get('/participant-checking', (req, res) => {
-    res.render('participant-checking', {
-        title: 'Participant Checking',
-        page_title: 'Participant Checking',
-        folder: 'Participant'
-    });
-});
-
-route.get('/breakout-rooms', (req, res) => {
-    res.render('breakout-rooms', {
-        title: 'Breakout Rooms',
-        page_title: 'Breakout Rooms',
-        folder: 'Participant'
-    });
-});
-
 route.get('/souvenir-exchange', (req, res) => {
     res.render('souvenir-exchange', {
         title: 'Souvenir Exchange',
         page_title: 'Souvenir Exchange',
-        folder: 'Event'
-    });
-});
-
-route.get('/booth', (req, res) => {
-    res.render('booth', {
-        title: 'Booth',
-        page_title: 'Booth Tracking',
         folder: 'Event'
     });
 });
@@ -89,21 +65,17 @@ route.get('/spin', (req, res) => {
     });
 });
 
-route.get('/manage-registration', (req, res) => {
-    res.render('manage-registration', {
-        title: 'Manage Registration Page',
-        page_title: 'Manage Registration Page',
+route.get('/manage-event', (req, res) => {
+    res.render('manage-event', {
+        title: 'Manage Event',
+        page_title: 'Manage Event',
         folder: 'Event'
     });
 });
 
-route.get('/manage-registrationform', (req, res) => {
-    res.render('manage-registrationform', {
-        title: 'Manage Registration Form',
-        page_title: 'Manage Registration Form',
-        folder: 'Event'
-    });
-});
+route.get('/survey', (req, res, next) => {
+    res.render('auth/survey', { title: 'Survey', layout: false })
+})
 
 route.get('/manage-feedbackform', (req, res) => {
     res.render('manage-feedbackform', {
@@ -117,14 +89,6 @@ route.get('/manage-feedbackresponses', (req, res) => {
     res.render('manage-feedbackresponses', {
         title: 'Manage Feedback Responses',
         page_title: 'Manage Feedback Responses',
-        folder: 'Event'
-    });
-});
-
-route.get('/manage-event', (req, res) => {
-    res.render('manage-event', {
-        title: 'Manage Event',
-        page_title: 'Manage Event',
         folder: 'Event'
     });
 });

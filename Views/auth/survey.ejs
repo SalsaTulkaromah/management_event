@@ -1,0 +1,384 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Feedback Form - Nama Event</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="assets/js/jquery.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: url('assets/images/bg-feedback.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', sans-serif;
+      position: relative;
+      color: #333;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: rgba(25, 35, 90, 0.85);
+      z-index: 0;
+    }
+
+    .main-content {
+      position: relative;
+      z-index: 1;
+      padding: 4rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .event-header {
+      text-align: center;
+      color: white;
+      margin-bottom: 2rem;
+    }
+
+    .event-header h1 {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .event-header p {
+      font-size: 1.1rem;
+      margin: 0;
+    }
+
+    .feedback-form {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      width: 100%;
+      max-width: 700px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #3f4f88;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .form-step {
+      display: none;
+    }
+
+    .form-step.active {
+      display: block;
+    }
+
+    .step-indicator {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .step-indicator span {
+      width: 18px;
+      height: 18px;
+      background-color: #ccc;
+      border-radius: 50%;
+      opacity: 0.5;
+    }
+
+    .step-indicator span.active {
+      background-color: #3f4f88;
+      opacity: 1;
+    }
+
+    .btn-primary {
+        background-color: #3f4f88;
+        border-color: #3f4f88;
+        transition: all 0.3s ease;
+      }
+      
+      .btn-primary:hover {
+        background-color: #2f3e6b;
+        border-color: #2f3e6b;
+        box-shadow: 0 4px 12px rgba(63, 79, 136, 0.4);
+      }
+
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+  <div class="main-content">
+
+    <!-- Event Header -->
+    <div class="event-header">
+      <img src="assets/images/logo-mix.png" alt="BERCA Logo" style="height: 60px;">
+      <h1 id="nama_event">NAMA EVENT</h1>
+      <p id="deskripsi_event"><em>"Description Event"</em></p>
+      <p id="tanggal_event">📅 5 Nov 2024 | 🕘 09:00 - 17:00 WIB | 📍 The Ritz-Carlton, Bandung</p>
+    </div>
+
+    <!-- Feedback Form -->
+    <div class="feedback-form">
+      <div class="form-title">Feedback Form</div>
+      <p class="text-center mb-4">Terima kasih telah berpartisipasi dalam event ini. Tanggapan Anda sangat berharga bagi kami untuk meningkatkan kualitas acara di masa mendatang.</p>
+
+      <div class="step-indicator">
+        <span id="step-1" class="active"></span>
+        <span id="step-2"></span>
+        <span id="step-3"></span>
+      </div>
+
+      <form id="surveyForm">
+        <!-- Step 1 -->
+        <div class="form-step active" id="step1">
+          <div class="form-title">Informasi Peserta</div>
+          <div class="row g-3">
+            <input type="hidden" class="form-control" name="participant_id" id="txtid">
+            <div class="col-md-6">
+              <input type="text" class="form-control" name="name" id="txtname" placeholder="Nama" required readonly>
+            </div>
+            <div class="col-md-6">
+              <input type="text" class="form-control" name="institution" id="txtcompany" placeholder="Company" required readonly>
+            </div>
+            <div class="col-md-6">
+                <input type="text" class="form-control" name="phone" id="txtphone" placeholder="Phone" required readonly>
+              </div>
+            <div class="col-md-6">
+              <input type="email" class="form-control" name="email" id="txtemail" placeholder="Email" required readonly>
+            </div>
+          </div>
+          <div class="d-grid mt-4">
+            <button type="button" class="btn btn-primary" onclick="nextStep(1)">Next</button>
+          </div>
+        </div>
+      
+        <!-- Step 2 -->
+        <div class="form-step" id="step2">
+          <div class="form-title">Pertanyaan Survei Kepuasan (Skala 1–5)<br><small>(1 = Sangat Tidak Puas, 5 = Sangat Puas)</small></div>
+          <div id="ratingSection">
+            <!-- Tambahkan input rating di sini jika diperlukan -->
+          </div>
+          <div class="d-flex justify-content-between mt-4">
+            <button type="button" class="btn btn-secondary" onclick="prevStep(1)">Back</button>
+            <button type="button" class="btn btn-primary" onclick="nextStep(2)">Next</button>
+          </div>
+        </div>
+      
+        <!-- Step 3 -->
+        <div class="form-step" id="step3">
+          <div class="form-title">Pertanyaan Tambahan</div>
+          <textarea name="suka_dari_event" class="form-control mb-2" placeholder="Hal apa yang paling Anda sukai dari event ini?"></textarea>
+          <textarea name="saran_event" class="form-control mb-2" placeholder="Apakah ada saran atau masukan agar event berikutnya lebih baik?"></textarea>
+          <textarea name="tertarik_info_lanjutan" class="form-control mb-3" placeholder="Apakah Anda tertarik untuk menerima info lanjutan atau demo lebih lanjut terkait APM Jennifer?"></textarea>
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Back</button>
+            <button type="submit" class="btn btn-success">Kirim Survei</button>
+          </div>
+        </div>
+      </form>
+      
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function nextStep(current) {
+        // Validasi khusus untuk step 1
+        if (current === 1) {
+          const name = document.getElementById("txtname").value.trim();
+          const company = document.getElementById("txtcompany").value.trim();
+          const phone = document.getElementById("txtphone").value.trim();
+          const email = document.getElementById("txtemail").value.trim();
+      
+          if (!name || !company || !email) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Oops...',
+              text: 'Nama, Company, Phone dan Email wajib diisi!'
+            });
+            return;
+          }
+      
+          // Validasi email format (opsional tapi direkomendasikan)
+          const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailPattern.test(email)) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Email tidak valid',
+              text: 'Mohon masukkan email yang benar.'
+            });
+            return;
+          }
+        }
+
+        // Step 2: Validasi semua pertanyaan rating harus terisi
+        if (current === 2) {
+            const allAnswered = pertanyaan.every(([name]) => {
+            const checked = document.querySelector(`input[name="${name}"]:checked`);
+            return !!checked;
+            });
+
+            if (!allAnswered) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Pertanyaan belum lengkap',
+                text: 'Silakan isi semua pertanyaan rating sebelum lanjut.'
+            });
+            return;
+            }
+        }
+      
+        // Lanjut ke step berikutnya
+        document.getElementById(`step${current}`).classList.remove('active');
+        document.getElementById(`step${current + 1}`).classList.add('active');
+    }
+      
+      
+    function prevStep(current) {
+        document.getElementById(`step${current + 1}`).classList.remove('active');
+        document.getElementById(`step${current}`).classList.add('active');
+      }
+      
+  </script>
+</body>
+</html>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventGuid = urlParams.get('participant_code');
+    
+    $(document).ready(function () {
+        getParticipantByQRCode(eventGuid);
+    });
+
+    function getParticipantByQRCode(qrcode) {
+        $.ajax({
+          url: '/attendance/getByQRCode',
+          method: 'GET',
+          data: { qrcode: qrcode },
+          dataType: 'json',
+          beforeSend: function () {
+            $('#preloader_xx').show(); // tampilkan loader jika perlu
+          },
+          complete: function () {
+            $('#preloader_xx').hide(); // sembunyikan loader setelah selesai
+          },
+          success: function (response) {
+            const data = response.data;
+            console.log('Participant found:', data);
+            // Ubah format tanggal dan jam
+            const startDate = new Date(data.start_date);
+            const endDate = new Date(data.end_date);
+
+            const optionsDate = { day: 'numeric', month: 'short', year: 'numeric' };
+            const optionsTime = { hour: '2-digit', minute: '2-digit' };
+
+            const dateStr = startDate.toLocaleDateString('id-ID', optionsDate);
+            const timeStart = startDate.toLocaleTimeString('id-ID', optionsTime);
+            const timeEnd = endDate.toLocaleTimeString('id-ID', optionsTime);
+
+            $('#nama_event').text(data.title);
+            $('#deskripsi_event').text(data.description);
+            $('#tanggal_event').html(`📅 ${dateStr} | 🕘 ${timeStart} - ${timeEnd} WIB | 📍 ${data.location}`);
+            $('#txtid').val(data.id);
+            $('#txtname').val(data.name);
+            $('#txtcompany').val(data.company_name);
+            $('#txtphone').val(data.phone);
+            $('#txtemail').val(data.email);
+          },
+          error: function (xhr) {
+            console.error('Error:', xhr.responseText);
+            Swal.fire('Not Found', 'QR Code tidak ditemukan atau belum discan', 'warning');
+          }
+        });
+      }
+      
+    // Daftar pertanyaan rating
+    const pertanyaan = [
+        ["materi_kelengkapan", "1. Seberapa puas Anda terhadap kelengkapan dan kejelasan materi yang disampaikan selama event?"],
+        ["materi_kesesuaian", "2. Seberapa sesuai materi yang disampaikan dengan kebutuhan Anda di bidang monitoring aplikasi?"],
+        ["materi_wawasan", "3. Apakah Anda merasa mendapatkan wawasan atau pengetahuan baru dari materi yang disampaikan?"],
+        ["penyampaian_jelas", "4. Seberapa puas Anda dengan cara penyampaian narasumber dalam menjelaskan materi APM Jennifer?"],
+        ["penyampaian_diskusi", "5. Seberapa baik narasumber menjawab pertanyaan atau diskusi selama sesi berlangsung?"],
+        ["pemahaman_fitur", "6. Seberapa jelas penjelasan mengenai fitur-fitur utama dari APM Jennifer?:"],
+        ["pemahaman_cara_kerja", "7. Seberapa mudah Anda memahami cara kerja APM Jennifer berdasarkan penjelasan dalam event?"],
+        ["pemahaman_demo", "8. Seberapa baik studi kasus atau demo produk membantu Anda memahami manfaat APM Jennifer?"],
+        ["rekomendasi_penggunaan", "9. Seberapa besar kemungkinan Anda akan merekomendasikan APM Jennifer untuk digunakan di perusahaan Anda?"],
+        ["relevansi_produk", "10. Seberapa relevan produk APM Jennifer untuk kebutuhan pemantauan performa aplikasi yang Anda kelola?"],
+        ["kepuasan_total", "11. Secara keseluruhan, seberapa puas Anda terhadap penyelenggaraan event ini?"]
+    ];
+
+    const ratingSection = document.getElementById('ratingSection');
+    pertanyaan.forEach(([name, label]) => {
+        const div = document.createElement('div');
+        div.classList.add('mb-3');
+        div.innerHTML = `<label>${label}</label><br>` +
+            Array.from({ length: 5 }, (_, i) => {
+                return `<label class="me-2"><input type="radio" class="form-check-input" name="${name}" value="${i + 1}" required> ${i + 1}</label>`;
+            }).join('');
+        ratingSection.appendChild(div);
+    });
+
+    document.getElementById('surveyForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+    
+        // ✅ VALIDASI STEP 3 (Pertanyaan Tambahan)
+        const suka = this.querySelector('textarea[name="suka_dari_event"]').value.trim();
+        const saran = this.querySelector('textarea[name="saran_event"]').value.trim();
+        const tertarik = this.querySelector('textarea[name="tertarik_info_lanjutan"]').value.trim();
+    
+        if (!suka || !saran || !tertarik) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Harap lengkapi semua pertanyaan tambahan',
+                text: 'Semua kolom di Step 3 harus diisi sebelum mengirim survei.'
+            });
+            return;
+        }
+    
+        // ✅ SUBMIT FORM
+        const formData = new FormData(this);
+    
+        const response = await fetch('/survey/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams([...formData])
+        });
+    
+        const result = await response.json();
+    
+        if (result.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Terima kasih!',
+                text: 'Survei berhasil dikirim.',
+            });
+            this.reset();
+    
+            // Opsional: Balik ke step 1 setelah reset
+            document.querySelectorAll('.form-step').forEach(step => step.classList.remove('active'));
+            document.getElementById('step1').classList.add('active');
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: result.message || 'Terjadi kesalahan saat mengirim survei.',
+            });
+        }
+    });
+    
+
+
+</script>
