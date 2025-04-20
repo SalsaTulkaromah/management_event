@@ -17,7 +17,32 @@
 
   <style>
     body {
-      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+      background: url('assets/images/bg-register.webp') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', sans-serif;
+      position: relative;
+      color: #333;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: rgba(25, 35, 90, 0.85);
+      z-index: 0;
+    }
+
+    .main-content {
+      position: relative;
+      z-index: 1;
+      padding: 0rem 0rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .register-container {
@@ -92,12 +117,13 @@
   </style>
 </head>
 <body>
-
-<div class="container register-container">
-  <div class="row w-100 justify-content-center">
-    <div class="col-lg-10">
-      <div class="row card-custom">
-        
+<div class="overlay"></div>
+  <div class="main-content">
+    <div class="container register-container">
+      <div class="row w-100 justify-content-center">
+        <div class="col-lg-10">
+          <div class="row card-custom">
+            
         <!-- KIRI -->
         <div class="col-md-5 left-info d-flex flex-column align-items-center justify-content-center text-center">
           <img id="eventImage" src="assets/images/jennifer_logo.webp" alt="" class="img-fluid" style="max-height: 250px; width: auto;">
@@ -109,7 +135,8 @@
 
         <!-- KANAN -->
         <div class="col-md-7 right-form">
-          <h5 class="fw-bold">Registration</h3>
+          <img src="assets/images/logo-color.png" alt="SINDIGI Logo" style="height: 30px;" class="mb-3">
+          <h3 class="fw-bold">REGISTRATION</h3>
           <p class="text-muted mb-4">Enter your details to register</p>
           <form id="registerForm">
             <div class="mb-3 input-group">
