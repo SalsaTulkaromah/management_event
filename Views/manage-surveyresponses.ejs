@@ -1,5 +1,5 @@
 <%- contentFor('HeaderCss') %>
-<!-- DataTables & SweetAlert -->
+<!-- SweetAlert -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <%- contentFor('body') %>
@@ -9,32 +9,33 @@
       <div class="card-header container-fluid">
         <div class="row g-2 justify-content-between align-items-center">
           <div class="col-md-auto">
-            <h5 class="card-title mb-0">LIST ATTENDANCE</h5>
+            <h5 class="card-title mb-0">FEEDBACK RESPONSES</h5>
           </div>
           <div class="col-md-auto d-flex align-items-center gap-2" id="exportButtonContainer"></div>
         </div>
       </div>
-
-      <!-- Tabel -->
       <div class="card-body">
-        <!-- Custom Controls: Length & Search -->
-        <div class="row mb-3">
-          <div class="col-md-6" id="customLengthContainer"></div>
-          <div class="col-md-6 text-end" id="customSearchContainer"></div>
-        </div>
-
-        <!-- Table -->
-        <table id="attendanceTable" class="table table-bordered dt-responsive nowrap table-striped text-center align-middle" style="width:100%">
+        <table id="surveyTable" class="table table-bordered dt-responsive nowrap table-striped text-center align-middle" style="width:100%">
           <thead style="background-color: #3f4f88;" class="text-white">
             <tr>
               <th class="text-center align-middle">EVENT</th>
               <th class="text-center align-middle">NAME</th>
               <th class="text-center align-middle">COMPANY</th>
               <th class="text-center align-middle">E-MAIL</th>
-              <th class="text-center align-middle">PHONE NUMBER</th>
-              <th class="text-center align-middle">STATUS</th>
-              <th class="text-center align-middle">ATTENDANCE TIME</th>
-            </tr>
+              <th class="text-center align-middle">MATERI<br>KELENGKAPAN</th>
+              <th class="text-center align-middle">MATERI<br>KESESUAIAN</th>
+              <th class="text-center align-middle">MATERI<br>WAWASAN</th>
+              <th class="text-center align-middle">PENYAMPAIAN<br>MATERI</th>
+              <th class="text-center align-middle">PENYAMPAIAN<br>DISKUSI</th>
+              <th class="text-center align-middle">PEMAHAMAN<br>FITUR</th>
+              <th class="text-center align-middle">PEMAHAMAN<br>CARA KERJA</th>
+              <th class="text-center align-middle">PEMAHAMAN<br>DEMO</th>
+              <th class="text-center align-middle">REKOMENDASI<br>PENGGUNAAN</th>
+              <th class="text-center align-middle">RELEVANSI<br>PRODUK</th>
+              <th class="text-center align-middle">KEPUASAN<br>TOTAL</th>
+              <th class="text-center align-middle">SUKA<br>DARI EVENT</th>
+              <th class="text-center align-middle">SARAN<br>EVENT</th>
+              <th class="text-center align-middle">TERTARIK<br>INFO LANJUTAN</th>
           </thead>
           <tbody></tbody>
         </table>
@@ -44,30 +45,17 @@
 </div>
 
 <%- contentFor('FooterJs') %>
-<!-- DataTables JS -->
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-
-<!-- DataTables Export Buttons -->
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
-
-<!-- JSZip for Excel Export -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
+<script src="/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="/assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
 <script>
   $(document).ready(function () {
-    getDataAttendence();
+    getDataSurveyResponse();
   });
 
-  async function getDataAttendence() {
+  async function getDataSurveyResponse() {
     const selectedEventId = $('#eventFilter').val(); // Ambil event terpilih
-  
     await $.ajax({
-      url: "/attendance/getAttendanceList",
+      url: '/survey-responses/getSurveyResponses',
       method: "get",
       data: {
         event_id: selectedEventId // Kirim sebagai query param
@@ -82,46 +70,45 @@
       success: function (resp_data) {
         var data = resp_data.data;
   
-        const table = $('#attendanceTable').DataTable({
+        const table = $('#surveyTable').DataTable({
           scrollX: true,
           data: data,
           columns: [
             { data: 'title' },
             { data: 'name' },
-            { data: 'company_name' },
+            { data: 'institution' },
             { data: 'email' },
-            { data: 'phone' },
-            {
-              data: 'status_kehadiran',
-              render: function (data) {
-                const badgeClass = data === 'Attended' ? 'bg-success' : 'bg-danger';
-                return `<span class="badge ${badgeClass}">${data}</span>`;
-              }
-            },
-            {
-              data: 'scanned_at',
-              render: function (data) {
-                return data ? new Date(data).toLocaleString() : '-';
-              }
-            }
+            { data: 'materi_kelengkapan' },
+            { data: 'materi_kesesuaian' },
+            { data: 'materi_wawasan' },
+            { data: 'penyampaian_jelas' },
+            { data: 'penyampaian_diskusi' },
+            { data: 'pemahaman_fitur' },
+            { data: 'pemahaman_cara_kerja' },
+            { data: 'pemahaman_demo' },
+            { data: 'rekomendasi_penggunaan' },
+            { data: 'relevansi_produk' },
+            { data: 'kepuasan_total' },
+            { data: 'suka_dari_event' },
+            { data: 'saran_event' },
+            { data: 'tertarik_info_lanjutan' },
           ],
           dom: 'Blfrtip',
           buttons: [
             {
               extend: 'collection',
               text: 'Export',
-              className: 'btn btn-soft-primary',
+              className: 'btn btn-soft-primary btn-sm',
               buttons: ['csv', 'excel']
             }
           ],
           bDestroy: true
         });
-  
+      
         // Tempatkan tombol export ke container
-        $('#attendanceTable_wrapper .dt-buttons').appendTo('#exportButtonContainer');
+        $('#surveyTable_wrapper .dt-buttons').appendTo('#exportButtonContainer');
   
         // Hapus filter sebelumnya
-        $('#statusFilter').remove();
         $('#eventFilter').remove();
   
         // Tambahkan kembali dropdown filter Event
@@ -130,32 +117,14 @@
             <option value="">All Events</option>
           </select>
         `;
-
   
-        // Tambahkan kembali dropdown filter Status
-        const statusFilterHtml = `
-          <div class="dropdown">
-            <select id="statusFilter" class="form-select btn-sm btn-soft-primary ms-2" style="width: auto; display:">
-              <option value="">All Status</option>
-              <option value="Attended">Attended</option>
-              <option value="Absent">Absent</option>
-            </select>
-          </div>
-        `;
-  
-        $('#exportButtonContainer').append(eventFilterHtml + statusFilterHtml);
+        $('#exportButtonContainer').append(eventFilterHtml);
   
         // Isi dropdown event secara dinamis
         loadEventFilterOptions(selectedEventId);
   
-        // Listener filter
-        $('#statusFilter').on('change', function () {
-          const val = $(this).val();
-          table.column(5).search(val).draw();
-        });
-  
         $('#eventFilter').on('change', function () {
-          getDataAttendence(); // Reload dengan event baru
+          getDataSurveyResponse(); // Reload dengan event baru
         });
       },
       error: function (request, status, error) {

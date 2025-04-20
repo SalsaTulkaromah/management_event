@@ -7,8 +7,9 @@ dotenv.config({ path: "./config.env" });
 exports.getParticipants = async function (req, res) {
     try {
       const result = await db.query(`
-        SELECT id, name, company_name, email, phone, status, qrcode 
-        FROM tbl_participants 
+        SELECT a.*, b.title, b.start_date, b.end_date, b.location
+        FROM tbl_participants a
+        join tbl_events b on (a.event_id = b.id)
         ORDER BY id DESC
       `);
   
@@ -41,6 +42,19 @@ exports.getParticipants = async function (req, res) {
   
       const participant = result.rows[0];
       
+      // Ambil event_name dari tabel tbl_events
+      const eventResult = await client.query(
+        `SELECT title FROM tbl_events WHERE id = $1`,
+        [participant.event_id]
+      );
+
+      if (eventResult.rowCount === 0) {
+        await client.query('ROLLBACK');
+        return res.status(404).json({ message: "Event tidak ditemukan." });
+      }
+
+      const eventTitle = eventResult.rows[0].title;
+
       // Generate QR code image dari data qrcode (string)
       const qrImageDataUrl = await QRCode.toDataURL(participant.qrcode);
 
@@ -64,7 +78,7 @@ exports.getParticipants = async function (req, res) {
       subject: 'Konfirmasi Persetujuan Pendaftaran Anda',
       html: `
         <p>Yth. <b>${participant.name}</b>,</p>
-        <p>Terima kasih telah mendaftar untuk mengikuti acara <strong>Tech Meetup 2025</strong>.</p>
+        <p>Terima kasih telah mendaftar untuk mengikuti acara <strong>${eventTitle}</strong>.</p>
         <p>Dengan ini kami informasikan bahwa <strong>pendaftaran Anda telah disetujui</strong>.</p>
         <p>Silakan membawa dan menunjukkan QR Code di bawah ini pada saat registrasi ulang di lokasi acara.</p>
         <p style="text-align: center;">
@@ -73,7 +87,7 @@ exports.getParticipants = async function (req, res) {
         <p>Mohon hadir tepat waktu dan membawa identitas diri yang sesuai saat registrasi.</p>
         <br>
         <p>Hormat kami,</p>
-        <p><strong>Panitia Tech Meetup 2025</strong><br>
+        <p><strong>Panitia ${eventTitle}</strong><br>
         PT. Sindigilive Teknologi Kreatif</p>
       `,
       attachments: [{
@@ -163,14 +177,31 @@ exports.getParticipants = async function (req, res) {
 
 // Ambil semua peserta
 exports.getParticipants = async function (req, res) {
+  const eventId = req.query.event_id;
   try {
-    const result = await db.query(`
-      SELECT id, name, company_name, email, phone, status, qrcode
-      FROM tbl_participants 
-      ORDER BY id DESC
-    `);
-
-    res.status(200).json(result.rows);
+    let query = `
+          SELECT a.*, b.title, b.start_date, b.end_date, b.location
+          FROM tbl_participants a
+          join tbl_events b on (a.event_id = b.id)
+        `;
+    
+        if (eventId) {
+          query += ` WHERE a.event_id = $1`;
+          query += ` ORDER BY a.entry_date DESC`;
+          values = [eventId];
+        } else {
+          query += ` ORDER BY a.entry_date DESC`;
+          values = [];
+        }
+    
+        const result = await db.query(query, values);
+        
+        res.status(200).json({ 
+          success: true,
+          message: "Success",
+          data: result.rows,
+          rowCount: result.rows.length
+      });
   } catch (error) {
     console.error("Error fetching participants:", error);
     res.status(500).json({ error: "Terjadi kesalahan saat mengambil data peserta." });

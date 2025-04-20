@@ -77,18 +77,10 @@ route.get('/survey', (req, res, next) => {
     res.render('auth/survey', { title: 'Survey', layout: false })
 })
 
-route.get('/manage-feedbackform', (req, res) => {
-    res.render('manage-feedbackform', {
-        title: 'Manage Feedback Form',
-        page_title: 'Manage Feedback Form',
-        folder: 'Event'
-    });
-});
-
-route.get('/manage-feedbackresponses', (req, res) => {
-    res.render('manage-feedbackresponses', {
-        title: 'Manage Feedback Responses',
-        page_title: 'Manage Feedback Responses',
+route.get('/manage-surveyresponses', (req, res) => {
+    res.render('manage-surveyresponses', {
+        title: 'Manage Survey Responses',
+        page_title: 'Manage Survey Responses',
         folder: 'Event'
     });
 });

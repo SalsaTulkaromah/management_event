@@ -10,6 +10,7 @@ const scanRoutes = require('./Routes/api/scanRoutes');
 const souvenirExchangeRoutes = require('./Routes/api/souvenirExchangeRoutes');
 const eventRoutes = require('./Routes/api/eventRoutes');
 const surveyRoutes = require('./Routes/api/surveyRoutes');
+const surveyResponsesRoutes = require('./Routes/api/surveyResponsesRoutes');
 const expressLayouts = require('express-ejs-layouts');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
@@ -45,6 +46,7 @@ app.use('/scan',scanRoutes);
 app.use('/event',eventRoutes);
 app.use('/souvenir-exchange', souvenirExchangeRoutes);
 app.use('/survey', surveyRoutes);
+app.use('/survey-responses',surveyResponsesRoutes);
 app.use('/', route);
 
 app.use(function(req, res, next) {

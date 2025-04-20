@@ -32,16 +32,6 @@ exports.registerEvent = async function (req, res) {
             });
         }
 
-        // 3. Generate QR Code (8 karakter unik)
-        const generateQRCode = () => crypto.randomBytes(4).toString('hex').toUpperCase().slice(0, 8);
-        let qrcode = generateQRCode();
-
-        let existing;
-        do {
-            existing = await db.query('SELECT 1 FROM tbl_participants WHERE qrcode = $1', [qrcode]);
-            if (existing.rows.length > 0) qrcode = generateQRCode();
-        } while (existing.rows.length > 0);
-
         // 4. Simpan Gambar
         let imageName = '';
         if (image) {
@@ -52,9 +42,9 @@ exports.registerEvent = async function (req, res) {
 
         // 5. Insert ke database
         const result = await db.query(
-            `INSERT INTO tbl_participants (name, company_name, email, phone, image, status, qrcode, event_id)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-            [nama, institution, email, phone, imageName, 'pending', qrcode, event_id]
+            `INSERT INTO tbl_participants (name, company_name, email, phone, image, status, event_id)
+             VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+            [nama, institution, email, phone, imageName, 'pending', event_id]
         );
 
         // 6. Kirim QR Code via email (opsional)

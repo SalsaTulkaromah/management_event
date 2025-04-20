@@ -11,16 +11,14 @@
           <div class="col-md-auto">
             <h5 class="card-title mb-0">DAFTAR PARTICIPANTS</h5>
           </div>
-          <div class="col-md-auto">
-            <div class="d-flex gap-2" id="datatable-buttons">
-            </div>
-          </div>
+          <div class="col-md-auto d-flex align-items-center gap-2" id="exportButtonContainer"></div>
         </div>
       </div>
       <div class="card-body">
         <table id="participantsTable" class="table table-bordered dt-responsive nowrap table-striped text-center align-middle" style="width:100%">
           <thead style="background-color: #3f4f88;" class="text-white">
             <tr>
+              <th class="text-center align-middle">EVENT</th>
               <th class="text-center align-middle">NAME</th>
               <th class="text-center align-middle">COMPANY</th>
               <th class="text-center align-middle">E-MAIL</th>
@@ -40,67 +38,23 @@
 </div>
 
 <%- contentFor('FooterJs') %>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<!-- DataTables Export Buttons -->
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
+
+<!-- JSZip for Excel Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
 <script>
   $(document).ready(function () {
-    const table = $('#participantsTable').DataTable({
-      ajax: {
-        url: '/participants/getParticipants',
-        dataSrc: ''
-      },
-      columns: [
-        { data: 'name' },
-        { data: 'company_name' },
-        { data: 'email' },
-        { data: 'phone' },
-        {
-          data: 'status',
-          render: function (data) {
-            let badgeClass = 'bg-secondary';
-            if (data === 'approved') badgeClass = 'bg-success';
-            else if (data === 'rejected') badgeClass = 'bg-danger';
-            return `<span class="badge ${badgeClass} text-uppercase">${data}</span>`;
-          }
-        },
-        {
-          data: 'qrcode',
-          render: function (data) {
-            return `<span class="badge bg-secondary">${data}</span>`;
-          }
-        },
-        {
-          data: null,
-          render: function (data, type, row) {
-            let buttons = `<button class="btn btn-outline-primary btn-icon waves-effect waves-light">
-                <i class="ri-mail-send-line btn-resend" data-id="${row.id}"></i></button>`;
-
-            if (row.status === 'pending') {
-              buttons += `
-                <button type="button" class="btn btn-outline-success btn-icon waves-effect waves-light">
-                  <i class="ri-check-line btn-approve" data-id="${row.id}"></i>
-                </button>
-                <button type="button" class="btn btn-outline-danger btn-icon waves-effect waves-light">
-                  <i class="ri-close-line btn-reject" data-id="${row.id}"></i>
-                </button>`;
-            }
-
-            return buttons;
-          }
-        }
-      ],
-      dom: 'Blfrtip',
-      buttons: [
-        {
-          extend: 'collection',
-          text: 'Export',
-          className: 'btn btn-soft-primary btn-sm',
-          buttons: ['copy', 'csv', 'excel']
-        }
-      ],
-      bDestroy: true,
-      initComplete: function () {
-        table.buttons().container().prependTo('#datatable-buttons');
-      }
-    });
+    getDataAttendence();
 
     // Approve
     $('#participantsTable').on('click', '.btn-approve', function () {
@@ -181,5 +135,134 @@
         }
       });
     });
+  
   });
+
+  async function getDataAttendence() {
+    const selectedEventId = $('#eventFilter').val(); // Ambil event terpilih
+  
+    await $.ajax({
+      url: "/participants/getParticipants",
+      method: "get",
+      data: {
+        event_id: selectedEventId // Kirim sebagai query param
+      },
+      dataType: "json",
+      beforeSend: function () {
+        $("#preloader_xx").show();
+      },
+      complete: function () {
+        $('#preloader_xx').hide();
+      },
+      success: function (resp_data) {
+        var data = resp_data.data;
+        const table = $('#participantsTable').DataTable({
+          scrollX: true,
+          data: data,
+          columns: [
+            { data: 'title' },
+            { data: 'name' },
+            { data: 'company_name' },
+            { data: 'email' },
+            { data: 'phone' },
+            {
+              data: 'status',
+              render: function (data) {
+                let badgeClass = 'bg-secondary';
+                if (data === 'approved') badgeClass = 'bg-success';
+                else if (data === 'rejected') badgeClass = 'bg-danger';
+                return `<span class="badge ${badgeClass} text-uppercase">${data}</span>`;
+              }
+            },
+            {
+              data: 'qrcode',
+              render: function (data) {
+                return `<span class="badge bg-secondary">${data}</span>`;
+              }
+            },
+            {
+              data: null,
+              render: function (data, type, row) {
+                let buttons = `<button class="btn btn-outline-primary btn-icon waves-effect waves-light">
+                    <i class="ri-mail-send-line btn-resend" data-id="${row.id}"></i></button>`;
+    
+                if (row.status === 'pending') {
+                  buttons += `
+                    <button type="button" class="btn btn-outline-success btn-icon waves-effect waves-light">
+                      <i class="ri-check-line btn-approve" data-id="${row.id}"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-icon waves-effect waves-light">
+                      <i class="ri-close-line btn-reject" data-id="${row.id}"></i>
+                    </button>`;
+                }
+    
+                return buttons;
+              }
+            }
+          ],
+          dom: 'Blfrtip',
+          buttons: [
+            {
+              extend: 'collection',
+              text: 'Export',
+              className: 'btn btn-soft-primary',
+              buttons: ['csv', 'excel']
+            }
+          ],
+          bDestroy: true
+        });
+  
+        // Tempatkan tombol export ke container
+        $('#participantsTable_wrapper .dt-buttons').appendTo('#exportButtonContainer');
+  
+        // Hapus filter sebelumnya
+        $('#eventFilter').remove();
+  
+        // Tambahkan kembali dropdown filter Event
+        const eventFilterHtml = `
+          <select id="eventFilter" class="form-select btn-sm btn-soft-primary ms-2" style="width: auto; display:">
+            <option value="">All Events</option>
+          </select>
+        `;
+  
+        $('#exportButtonContainer').append(eventFilterHtml);
+  
+        // Isi dropdown event secara dinamis
+        loadEventFilterOptions(selectedEventId);
+  
+        $('#eventFilter').on('change', function () {
+          getDataAttendence(); // Reload dengan event baru
+        });
+      },
+      error: function (request, status, error) {
+        console.log('code: ' + request.status + "\n" + 'message: ' + request.responseText + "\n" + 'error: ' + error);
+      }
+    });
+  }
+
+  async function loadEventFilterOptions(selectedId = '') {
+    try {
+      const res = await fetch('/event/getEvents', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({}) // kalau butuh kirim parameter bisa ditambahkan di sini
+      });
+  
+      const events = await res.json();
+  
+      const $eventFilter = $('#eventFilter');
+      $eventFilter.empty(); // kosongkan dulu
+      $eventFilter.append(`<option value="">All Events</option>`); // default option
+  
+      events.data.forEach(ev => {
+        const selected = ev.id == selectedId ? 'selected' : '';
+        $eventFilter.append(`<option value="${ev.id}" ${selected}>${ev.title}</option>`);
+      });
+  
+    } catch (err) {
+      console.error('Failed to load events:', err);
+    }
+  }
 </script>
