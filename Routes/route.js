@@ -57,13 +57,18 @@ route.get('/souvenir-exchange', (req, res) => {
     });
 });
 
-route.get('/spin', (req, res) => {
-    res.render('spin', {
-        title: 'Spin',
-        page_title: 'Spin Wheel',
+
+route.get('/manage-spin', (req, res) => {
+    res.render('manage-spin', {
+        title: 'Manage Spin The Wheel',
+        page_title: 'Manage Spin The Wheel',
         folder: 'Event'
     });
 });
+
+route.get('/spin', (req, res, next) => {
+    res.render('spin', { title: 'Spin The Wheel', layout: false })
+})
 
 route.get('/manage-event', (req, res) => {
     res.render('manage-event', {

@@ -11,6 +11,8 @@ const souvenirExchangeRoutes = require('./Routes/api/souvenirExchangeRoutes');
 const eventRoutes = require('./Routes/api/eventRoutes');
 const surveyRoutes = require('./Routes/api/surveyRoutes');
 const surveyResponsesRoutes = require('./Routes/api/surveyResponsesRoutes');
+const spinRoutes = require('./Routes/api/spinRoutes');
+const manageSpinRoutes = require('./Routes/api/manageSpinRoutes');
 const expressLayouts = require('express-ejs-layouts');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
@@ -47,6 +49,8 @@ app.use('/event',eventRoutes);
 app.use('/souvenir-exchange', souvenirExchangeRoutes);
 app.use('/survey', surveyRoutes);
 app.use('/survey-responses',surveyResponsesRoutes);
+app.use('/spin',spinRoutes);
+app.use('/manage-spin',manageSpinRoutes);
 app.use('/', route);
 
 app.use(function(req, res, next) {
