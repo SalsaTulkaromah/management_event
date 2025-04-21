@@ -45,8 +45,20 @@
 </div>
 
 <%- contentFor('FooterJs') %>
-<script src="/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="/assets/libs/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<!-- DataTables Export Buttons -->
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
+
+<!-- JSZip for Excel Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
 <script>
   $(document).ready(function () {
     getDataSurveyResponse();
@@ -98,7 +110,7 @@
             {
               extend: 'collection',
               text: 'Export',
-              className: 'btn btn-soft-primary btn-sm',
+              className: 'btn btn-soft-primary',
               buttons: ['csv', 'excel']
             }
           ],
@@ -113,7 +125,7 @@
   
         // Tambahkan kembali dropdown filter Event
         const eventFilterHtml = `
-          <select id="eventFilter" class="form-select btn-sm btn-soft-primary ms-2" style="width: auto; display:">
+          <select id="eventFilter" class="btn btn-soft-primary ms-2" style="width: auto; display:">
             <option value="">All Events</option>
           </select>
         `;
