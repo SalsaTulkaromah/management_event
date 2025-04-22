@@ -28,7 +28,7 @@
           <div class="col-md-6">
             <div class="border rounded p-5 shadow bg-white text-center">
               <div class="mx-auto rounded-circle overflow-hidden border border-4 border-white shadow mb-4" 
-                  style="width: 280px; height: 280px; background-color: #f8f9fa;">
+                  style="width: 230px; height: 230px; background-color: #f8f9fa;">
                 <img id="participant-photo"
                     src=""
                     class="w-100 h-100 object-fit-cover d-none"
@@ -147,7 +147,7 @@
   function startScanner(deviceId) {
     html5QrcodeScanner.start(
       deviceId,
-      { fps: 10, qrbox: 500 },
+      { fps: 10, qrbox: 430 },
       function (qrCodeMessage) {
         if (scanningLocked) return;
         scanningLocked = true;
@@ -182,14 +182,14 @@
                 .removeClass()
                 .addClass('fw-semibold px-4 py-3 rounded shadow-sm text-center')
                 .css({
-                  'background-color': data.success ? '#d1f7d6' : '#fff3cd',
-                  'color': data.success ? '#1e7e34' : '#856404',
+                  'background-color': data.success ? '#008000' : '#FF0000',
+                  'color': data.success ? '#FFFFFF' : '#FFFFFF',
                   'font-size': '1.5rem', 
-                  'line-height': '1.8rem'
+                  'line-height': '1.5rem'
                 })
                 .html(data.success
-                  ? `<i style="font-size: 2rem; vertical-align: middle;"></i> <span>Selamat! Souvenir Anda berhasil ditukar.</span><br><span>Terima kasih telah hadir di acara kami.</span>`
-                  : `<i style="font-size: 2rem; vertical-align: middle;"></i> <span>Anda sudah menukarkan souvenir sebelumnya.</span><br><span>Terima kasih telah hadir di acara kami.</span>`);
+                  ? `<i style="font-size: 1rem; vertical-align: middle;"></i> <span>Selamat! Souvenir Anda berhasil ditukar.</span><br><span>Terima kasih telah hadir di acara kami.</span>`
+                  : `<i style="font-size: 1rem; vertical-align: middle;"></i> <span>Anda sudah menukarkan souvenir.</span><br><span>Terima kasih telah hadir di acara kami.</span>`);
 
               attendanceTable.ajax.reload(null, false);
               updateAttendanceCount();
@@ -201,10 +201,10 @@
               .removeClass()
               .addClass('fw-semibold px-4 py-3 rounded shadow-sm text-center')
               .css({
-                'background-color': '#f8d7da',
-                'color': '#721c24',
+                'background-color': '#ffea00',
+                'color': '#FFFFFF',
                 'font-size': '1.5rem',
-                'line-height': '1.8rem'
+                'line-height': '1.5rem'
               })
               .html(`<i style="font-size: 2rem; vertical-align: middle;"></i> <span>QR Code tidak valid atau tidak terdaftar.</span>`);
             }
