@@ -37,11 +37,9 @@ exports.getAttendanceList = async (req, res) => {
 
 exports.getParticipantByQRCode = async (req, res) => {
   const { qrcode } = req.query; // atau req.body jika pakai POST
-
   if (!qrcode) {
     return res.status(400).json({ error: 'QR Code is required' });
   }
-
   const query = `
     SELECT 
       p.id, 
@@ -68,19 +66,14 @@ exports.getParticipantByQRCode = async (req, res) => {
       AND p.qrcode = $1
     LIMIT 1
   `;
-
   try {
     const result = await db.query(query, [qrcode]);
-
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Participant not found or not yet scanned' });
     }
-
     return res.json({ data: result.rows[0] });
-
   } catch (err) {
     console.error('Error fetching participant by QR:', err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
-

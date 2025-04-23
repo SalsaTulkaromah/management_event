@@ -60,8 +60,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <script>
+  var role = '<%-event_objectCookie.role%>';
   $(document).ready(function () {
-    getDataSurveyResponse();
+    if (role == "Admin"){
+        $('body').show(); // Tampilkan konten jika pengguna adalah admin
+        getDataSurveyResponse();
+    }else{
+        window.location.href = "404";
+    }
+    
   });
 
   async function getDataSurveyResponse() {

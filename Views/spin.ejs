@@ -97,7 +97,7 @@
     <div class="main-content">
       <div class="event-header">
         <img src="assets/images/logo-mix.png" alt="SINDIGI Logo" style="height: 60px;">
-        <h1 id="nama_event">NAMA EVENT</h1>
+        <h1 id="nama_event" class="fw-bold">NAMA EVENT</h1>
         <p id="deskripsi_event"><em>"Description Event"</em></p>
         <p id="tanggal_event">📅 Tanggal | 🕘 Waktu | 📍 Tempat</p>
       </div>
@@ -110,54 +110,137 @@
     </div>
     
     <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get('event_id');
+    
+        if (!eventId) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Event ID tidak ditemukan',
+            text: 'Silakan akses melalui halaman event.'
+          });
+          return;
+        }
+    
+        // Ambil detail event
+        fetch('/event/getEventByID', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ event_id: eventId })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.data.length > 0) {
+            const event = data.data[0]; // Ambil event pertama (biasanya satu saja)
+            
+            const startDate = new Date(event.start_date);
+            const endDate = new Date(event.end_date);
+
+            const optionsDate = { day: 'numeric', month: 'short', year: 'numeric' };
+            const optionsTime = { hour: '2-digit', minute: '2-digit' };
+
+            const dateStr = startDate.toLocaleDateString('id-ID', optionsDate);
+            const timeStart = startDate.toLocaleTimeString('id-ID', optionsTime);
+            const timeEnd = endDate.toLocaleTimeString('id-ID', optionsTime);
+
+
+            // Masukkan data ke dalam elemen
+            document.getElementById('nama_event').textContent = event.title;
+            document.getElementById('deskripsi_event').innerHTML = `<em>"${event.description}"</em>`;
+            $('#tanggal_event').html(`📅 ${dateStr} | 🕘 ${timeStart} - ${timeEnd} WIB | 📍 ${event.location}`);
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Gagal mengambil data',
+              text: 'Event tidak ditemukan.'
+            });
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Kesalahan Server',
+            text: 'Tidak dapat mengambil data event.'
+          });
+        });
+      });
+    </script>
+
+    
+    <script>
       $(document).ready(function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get('event_id');
+      
         $.ajax({
-          url: '/spin/getSpinPage',  // The API endpoint
-          method: 'GET',
-          success: function(data) {
-            console.log("DATA DARI SERVER:", data);
-            
-            const participants = Array.isArray(data) ? data : data.participants; // Pastikan data yang diterima adalah array
-            
-            // Fungsi untuk mengacak array
+          url: '/spin/getSpinPage',
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({ event_id: eventId }),
+          success: function(response) {
+            console.log("DATA DARI SERVER:", response);
+      
+            // Gunakan object lengkap agar bisa akses id
+            const participants = response.data.map(p => ({ id: p.id, name: p.name }));
+      
             function shuffleArray(array) {
               for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]]; // Tukar elemen
+                [array[i], array[j]] = [array[j], array[i]];
               }
               return array;
             }
-        
-            // Kocok nama peserta sebelum digunakan
+      
             const shuffledParticipants = shuffleArray(participants);
-        
-            $('#startBtn').click(function() {
+      
+            $('#startBtn').click(function () {
               const winnerDiv = $('#winnerName');
               let counter = 0;
-              const interval = setInterval(function() {
+              let selectedWinner = null;
+      
+              const interval = setInterval(function () {
                 const randomIndex = Math.floor(Math.random() * shuffledParticipants.length);
-                winnerDiv.text(shuffledParticipants[randomIndex]); // Menampilkan nama pemenang acak
+                selectedWinner = shuffledParticipants[randomIndex];
+                winnerDiv.text(selectedWinner.name);
+      
                 counter++;
-                if (counter > 20) { // Spin 20 kali, kemudian berhenti
+                if (counter > 60) {
                   clearInterval(interval);
-                  
-                  // Menampilkan pemenang dengan SweetAlert
-                  const winner = shuffledParticipants[randomIndex];
+      
                   Swal.fire({
                     title: 'Selamat!',
-                    text: `Pemenang adalah ${winner}`,
+                    text: `Pemenang adalah ${selectedWinner.name}`,
                     icon: 'success',
                     confirmButtonText: 'OK'
+                  }).then(() => {
+                    $.ajax({
+                      url: '/spin/setWinner',
+                      method: 'POST',
+                      contentType: 'application/json',
+                      data: JSON.stringify({ participant_id: selectedWinner.id }),
+                      success: function (res) {
+                        console.log("Pemenang disimpan:", res.message);
+                        // Tambahkan ini untuk refresh halaman
+                        location.reload(); 
+                      },
+                      error: function (err) {
+                        console.error('Gagal menyimpan pemenang:', err);
+                      }
+                    });
                   });
                 }
-              }, 100); // Update setiap 100ms
+              }, 100);
             });
           },
           error: function(err) {
             console.error('Error fetching participants:', err);
           }
         });
-      });            
+      });
     </script> 
   </body>
 </html> 

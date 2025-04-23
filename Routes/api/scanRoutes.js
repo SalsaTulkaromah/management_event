@@ -6,5 +6,4 @@ route.get('/scan-participant', scanController.renderScanPage);
 route.post('/findParticipantByQRCode', scanController.findParticipantByQRCode);
 route.get('/getAttendanceList', scanController.getAttendanceList);
 
-
 module.exports = route;

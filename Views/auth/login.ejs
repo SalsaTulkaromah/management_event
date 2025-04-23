@@ -22,6 +22,8 @@
     <!-- custom Css-->
     <link href="assets/css/custom.min.css" id="app-style" rel="stylesheet" type="text/css" />
     <script src="assets/js/jquery.min.js"></script>
+     <!-- SweetAlert2 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -165,11 +167,12 @@
     $(document).ready(function() {
  
     });
+
     $('#loginForm').submit(function(e) {
         e.preventDefault();
         const username = $('#username').val();
         const password = $('#userpassword').val();
-
+    
         $.ajax({
             url: '/auth/login',
             type: 'POST',
@@ -177,15 +180,30 @@
             data: JSON.stringify({ username, password }),
             success: function(response) {
                 if (response.success) {
-                    window.location.href = "/"; // arahkan ke halaman setelah login
+                    console.log(response.user.role)
+                    if (response.user.role == "Admin"){
+                        window.location.href = "/"; // arahkan ke halaman setelah login
+                    }else{
+                        window.location.href = "/scan-participant"; // arahkan ke halaman setelah login
+                    }
                 } else {
-                    alert('Username atau Password tidak sesuai')
-                    // $('#errorMessage').text(response.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Login Gagal',
+                        text: 'Username atau Password tidak sesuai',
+                        confirmButtonColor: '#d33'
+                    });
                 }
             },
             error: function() {
-                $('#errorMessage').text('Terjadi kesalahan server');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Kesalahan Server',
+                    text: 'Terjadi kesalahan saat menghubungi server. Silakan coba lagi.',
+                    confirmButtonColor: '#d33'
+                });
             }
         });
     });
+    
 </script>

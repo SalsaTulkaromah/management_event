@@ -31,24 +31,25 @@
             <div id="two-column-menu">
             </div>
             <ul class="navbar-nav" id="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="dashboard">
-                        <i class="ri-dashboard-line"></i> <span data-key="t-dashboard">Dashboard</span>
-                    </a>
-                </li>
+                <% if (event_objectCookie.role == "Admin") { %>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="dashboard">
+                            <i class="ri-dashboard-line"></i> <span data-key="t-dashboard">Dashboard</span>
+                        </a>
+                    </li>
+                
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="participants">
+                            <i class="las la-users"></i> <span data-key="t-participants">Participants</span>
+                        </a>
+                    </li>
 
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="participants">
-                        <i class="las la-users"></i> <span data-key="t-participants">Participants</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="attendance">
-                        <i class="las la-user-check"></i> <span data-key="t-attendance">Attendance</span>
-                    </a>
-                </li>
-
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="attendance">
+                            <i class="las la-user-check"></i> <span data-key="t-attendance">Attendance</span>
+                        </a>
+                    </li>
+                <%}  %>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="scan-participant">
                         <i class="bx bx-qr"></i> <span data-key="t-scan-participant">Scan Participants</span>
@@ -70,15 +71,19 @@
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarManagepage">
                         <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="manage-event" class="nav-link" data-key="t-manage-event"> Event Form </a>
-                            </li>
+                            <% if (event_objectCookie.role == "Admin") { %>
+                                <li class="nav-item">
+                                    <a href="manage-event" class="nav-link" data-key="t-manage-event"> Event Form </a>
+                                </li>
+                            <%}  %>
                             <li class="nav-item">
                                 <a href="manage-spin" class="nav-link" data-key="t-manage-spin"> Spin The Wheel </a>
                             </li>
-                            <li class="nav-item">
-                                <a href="manage-surveyresponses" class="nav-link" data-key="t-manage-surveyresponses"> Feedback Responses </a>
-                            </li>
+                            <% if (event_objectCookie.role == "Admin") { %>
+                                <li class="nav-item">
+                                    <a href="manage-surveyresponses" class="nav-link" data-key="t-manage-surveyresponses"> Feedback Responses </a>
+                                </li>
+                            <%}  %>
                         </ul>
                     </div>        
                 </li>   

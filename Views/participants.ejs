@@ -53,89 +53,98 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <script>
+  var role = '<%-event_objectCookie.role%>';
+  var token = '<%-event_objectCookie.token%>';
+
   $(document).ready(function () {
-    getDataAttendence();
+    if (role == "Admin"){
+      $('body').show(); // Tampilkan konten jika pengguna adalah admin
+      getDataAttendence();
 
-    // Approve
-    $('#participantsTable').on('click', '.btn-approve', function () {
-      const participantId = $(this).data('id');
-      Swal.fire({
-        title: 'Yakin ingin approve peserta ini?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Ya, Approve',
-        cancelButtonText: 'Batal'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-          $.ajax({
-            url: `/participants/approve/${participantId}`,
-            method: 'POST',
-            success: function (res) {
-              Swal.fire('Approved!', res.message || 'Peserta disetujui.', 'success');
-              table.ajax.reload();
-            },
-            error: function () {
-              Swal.fire('Error', 'Gagal memproses permintaan.', 'error');
-            }
-          });
-        }
+      // Approve
+      $('#participantsTable').on('click', '.btn-approve', function () {
+        const participantId = $(this).data('id');
+        Swal.fire({
+          title: 'Yakin ingin approve peserta ini?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Ya, Approve',
+          cancelButtonText: 'Batal'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            $.ajax({
+              url: `/participants/approve/${participantId}`,
+              method: 'POST',
+              success: function (res) {
+                Swal.fire('Approved!', res.message || 'Peserta disetujui.', 'success');
+                table.ajax.reload();
+              },
+              error: function () {
+                Swal.fire('Error', 'Gagal memproses permintaan.', 'error');
+              }
+            });
+          }
+        });
       });
-    });
 
-    $('#participantsTable').on('click', '.btn-resend', function () {
-      const participantId = $(this).data('id');
-      Swal.fire({
-        title: 'Yakin ingin mengirim email peserta ini?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Ya, Kirim Ulang',
-        cancelButtonText: 'Batal'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-          $.ajax({
-            url: `/participants/approve/${participantId}`,
-            method: 'POST',
-            success: function (res) {
-              Swal.fire('Approved!', res.message || 'Peserta disetujui.', 'success');
-              table.ajax.reload();
-            },
-            error: function () {
-              Swal.fire('Error', 'Gagal memproses permintaan.', 'error');
-            }
-          });
-        }
+      $('#participantsTable').on('click', '.btn-resend', function () {
+        const participantId = $(this).data('id');
+        Swal.fire({
+          title: 'Yakin ingin mengirim email peserta ini?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Ya, Kirim Ulang',
+          cancelButtonText: 'Batal'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            $.ajax({
+              url: `/participants/approve/${participantId}`,
+              method: 'POST',
+              success: function (res) {
+                Swal.fire('Approved!', res.message || 'Peserta disetujui.', 'success');
+                table.ajax.reload();
+              },
+              error: function () {
+                Swal.fire('Error', 'Gagal memproses permintaan.', 'error');
+              }
+            });
+          }
+        });
       });
-    });
 
-    // Reject
-    $('#participantsTable').on('click', '.btn-reject', function () {
-      const participantId = $(this).data('id');
-      Swal.fire({
-        title: 'Yakin ingin reject peserta ini?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Ya, Reject',
-        cancelButtonText: 'Batal'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-          $.ajax({
-            url: `/participants/reject/${participantId}`,
-            method: 'POST',
-            success: function (res) {
-              Swal.fire('Ditolak!', res.message || 'Peserta ditolak.', 'info');
-              table.ajax.reload();
-            },
-            error: function () {
-              Swal.fire('Error', 'Gagal memproses permintaan.', 'error');
-            }
-          });
-        }
+      // Reject
+      $('#participantsTable').on('click', '.btn-reject', function () {
+        const participantId = $(this).data('id');
+        Swal.fire({
+          title: 'Yakin ingin reject peserta ini?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Ya, Reject',
+          cancelButtonText: 'Batal'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            $.ajax({
+              url: `/participants/reject/${participantId}`,
+              method: 'POST',
+              success: function (res) {
+                Swal.fire('Ditolak!', res.message || 'Peserta ditolak.', 'info');
+                table.ajax.reload();
+              },
+              error: function () {
+                Swal.fire('Error', 'Gagal memproses permintaan.', 'error');
+              }
+            });
+          }
+        });
       });
-    });
-  
+    
+    }else{
+        window.location.href = "404";
+    }
+    
   });
 
   async function getDataAttendence() {
@@ -144,6 +153,7 @@
     await $.ajax({
       url: "/participants/getParticipants",
       method: "get",
+      
       data: {
         event_id: selectedEventId // Kirim sebagai query param
       },

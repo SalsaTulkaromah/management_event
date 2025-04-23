@@ -75,4 +75,3 @@ exports.getAttendanceList = async (req, res) => {
       res.status(500).json({ data: [] });
     }
   };
-  

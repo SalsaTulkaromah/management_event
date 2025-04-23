@@ -41,6 +41,32 @@
   </div>
 </div>
 
+<!-- Modal Pemenang -->
+<div class="modal fade" id="winnersModal" tabindex="-1" aria-labelledby="winnersModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="winnersModalLabel">Daftar Pemenang Door Prize</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th class="text-center align-middle">No</th>
+              <th class="text-center align-middle">Nama Pemenang</th>
+              <th class="text-center align-middle">Event</th>
+            </tr>
+          </thead>
+          <tbody id="winnersTableBody">
+            <!-- Data pemenang akan ditambahkan di sini -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
 <%- contentFor('FooterJs') %>
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
@@ -63,7 +89,6 @@
 
   async function getSpinList() {
     const selectedEventId = $('#eventFilter').val(); // Ambil event terpilih
-  
     await $.ajax({
       url: "/manage-spin/getSpinList",
       method: "get",
@@ -107,17 +132,15 @@
   
         // Tambahkan tombol-tombol tambahan
         const buttonGroup = `
-          <a href="http://localhost:9000/spin" target="_blank" class="btn btn-soft-success">
+          <a href="#" onclick="handleSpinClick('${selectedEventId}')" class="btn btn-soft-success">
             <i class="ri-eye-line me-1"></i> View Spin
           </a>
-          <button class="btn btn-soft-warning" onclick="setWinner()">
-            <i class="ri-check-double-line me-1"></i> Set Winner
-          </button>
-          <button class="btn btn-soft-danger" onclick="resetWinner()">
-            <i class="ri-refresh-line me-1"></i> Reset Winner
-          </button>
+          <a href="#" onclick="showWinnersBtn()" class="btn btn-soft-secondary">
+            <i class="ri-eye-line me-1"></i> View Winner
+          </a>
         `;
         $('#exportButtonContainer').append(buttonGroup);
+
   
         // Isi dropdown event secara dinamis
         loadEventFilterOptions(selectedEventId);
@@ -133,6 +156,61 @@
     });
   }  
 
+  function showWinnersBtn() {
+    $.ajax({
+      url: '/spin/getWinners',  // Endpoint untuk mengambil pemenang dari server
+      method: 'GET',
+      success: function(response) {
+        if (response.success) {
+          const winnersTable = $('#winnersTableBody');
+          winnersTable.empty();  // Clear the table before adding new data
+  
+          // Loop through the winners and display them in the table
+          response.data.forEach((winner, index) => {
+            winnersTable.append(`
+              <tr>
+                <td class="text-center align-middle">${index + 1}</td>
+                <td>${winner.participant_name}</td>
+                <td>${winner.event_title}</td>
+              </tr>
+            `);
+          });
+  
+          // Show the modal after populating the table
+          $('#winnersModal').modal('show');
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Gagal',
+            text: 'Tidak dapat mengambil data pemenang.'
+          });
+        }
+      },
+      error: function(err) {
+        console.error('Error fetching winners:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Kesalahan Server',
+          text: 'Gagal mengambil data pemenang.'
+        });
+      }
+    });
+  }
+  
+  function handleSpinClick(eventId) {
+    if (!eventId || eventId === "undefined") {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Pilih Event Dulu',
+        text: 'Silakan pilih event sebelum melihat spin.'
+      });
+      return;
+    }
+  
+    const url = `http://localhost:9000/spin?event_id=${eventId}`;
+    window.open(url, '_blank');
+  }
+  
   async function loadEventFilterOptions(selectedId = '') {
     try {
       const res = await fetch('/event/getEvents', {
@@ -159,78 +237,4 @@
     }
   }
 
-  function setWinner() {
-    Swal.fire({
-      title: '<strong>Set Winner</strong>',
-      html:
-        `<form id="setWinnerForm" class="text-start">
-          <div class="mb-3">
-            <label for="winnerName" class="form-label">Name <span class="text-danger">*</span></label>
-            <input type="text" id="winnerName" class="form-control" placeholder="Enter name" required>
-          </div>
-          <div class="mb-3">
-            <label for="rollCount" class="form-label">Number of Rolls <span class="text-danger">*</span></label>
-            <input type="number" id="rollCount" class="form-control" placeholder="Ex: 3 (participant will be selected on the 3rd roll)" required>
-          </div>
-        </form>`,
-      showCancelButton: true,
-      confirmButtonText: 'SET',
-      cancelButtonText: 'Cancel',
-      focusConfirm: false,
-      preConfirm: () => {
-        const name = document.getElementById('winnerName').value.trim();
-        const rolls = document.getElementById('rollCount').value.trim();
-  
-        if (!name || !rolls) {
-          Swal.showValidationMessage('Please fill in both fields.');
-          return false;
-        }
-  
-        return { name, rolls: parseInt(rolls) };
-      }
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const { name, rolls } = result.value;
-        
-        // Kirim data ke backend (contoh endpoint)
-        fetch('/manage-spin/set-winner', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ name, rolls })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            Swal.fire('Success', 'Winner has been set!', 'success');
-            getSpinList(); // Refresh table jika perlu
-          } else {
-            Swal.fire('Error', data.message || 'Failed to set winner.', 'error');
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          Swal.fire('Error', 'An error occurred while setting the winner.', 'error');
-        });
-      }
-    });
-  }  
-  
-  function resetWinner() {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Reset Winner',
-      text: 'Apakah kamu yakin ingin mereset semua pemenang?',
-      showCancelButton: true,
-      confirmButtonText: 'Ya, reset!',
-      cancelButtonText: 'Batal'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Panggil endpoint resetWinner kalau sudah tersedia
-        Swal.fire('Berhasil!', 'Data pemenang telah direset.', 'success');
-      }
-    });
-  }
-  
 </script>

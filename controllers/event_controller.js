@@ -1,7 +1,6 @@
 const db = require('../libs/db');
 const dotenv = require('dotenv');
 const path = require('path');
-
 dotenv.config({ path: "./config.env" });
 
 exports.getEvents = async function (req, res) {
@@ -22,6 +21,28 @@ exports.getEvents = async function (req, res) {
       console.error("Error fetching events:", error);
       res.status(500).json({ error: "Terjadi kesalahan saat mengambil data peserta." });
     }
+};
+
+exports.getEventByID = async function (req, res) {
+  const { event_id } = req.body;
+
+  try {
+    const result = await db.query(`
+      SELECT *
+      FROM tbl_events
+      WHERE id = $1
+    `, [event_id]);
+
+    res.status(200).json({ 
+      success: true,
+      message: "Success",
+      data: result.rows,
+      rowCount: result.rows.length
+    });
+  } catch (error) {
+    console.error("Error fetching event:", error);
+    res.status(500).json({ error: "Terjadi kesalahan saat mengambil data event." });
+  }
 };
 
 exports.upsertEvent = async function (req, res) {

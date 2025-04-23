@@ -5,6 +5,8 @@
 <div class="container-fluid px-4">
   <h4 class="mb-4 fw-bold">DASHBOARD ANALYSIS</h4>
 
+  
+
   <!-- Summary Card -->
   <div class="row g-3 mb-4">
     <div class="col-md-3">
@@ -59,6 +61,13 @@
 
 <%- contentFor('FooterJs') %>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  // Nanti di sini kita isi ajax buat fetch data chart
+<script type="text/javascript">
+  var role = '<%-event_objectCookie.role%>';
+  $(document).ready(function() {
+    if (role == "Admin"){
+        $('body').show(); // Tampilkan konten jika pengguna adalah admin
+    }else{
+        window.location.href = "404";
+    }
+  });
 </script>

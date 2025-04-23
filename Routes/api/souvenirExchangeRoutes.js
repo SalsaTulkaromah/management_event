@@ -7,6 +7,6 @@ route.get('/', (req, res) => {
 });
 
 route.get('/getAttendanceList', controller.getAttendanceList);
-route.post('/findParticipantByQRCode', controller.findParticipantByQRCode);
+route.post('/findParticipantByQRCode',controller.findParticipantByQRCode);
 
 module.exports = route;

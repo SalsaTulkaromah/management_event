@@ -90,58 +90,65 @@
 
 <%- contentFor('FooterJs') %>
 <script>
+  var role = '<%-event_objectCookie.role%>';
   $(document).ready(function () {
-    loadEvents();
+    if (role == "Admin"){
+        $('body').show(); // Tampilkan konten jika pengguna adalah admin
+        loadEvents();
 
-    $('#eventForm').submit(function (e) {
-      e.preventDefault();
-      const form = $('#eventForm')[0];
-      const formData = new FormData(form);
+        $('#eventForm').submit(function (e) {
+          e.preventDefault();
+          const form = $('#eventForm')[0];
+          const formData = new FormData(form);
 
-      $.ajax({
-        url: '/event/upsertEvent',
-        method: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function (res) {
-          if (res.success) {
-            Swal.fire('Success', res.message, 'success');
-            $('#modalAddEvent').modal('hide');
-            loadEvents();
-            $('#eventForm')[0].reset();
-          } else {
-            Swal.fire('Error', res.message || 'Terjadi kesalahan.', 'error');
+          $.ajax({
+            url: '/event/upsertEvent',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+              if (res.success) {
+                Swal.fire('Success', res.message, 'success');
+                $('#modalAddEvent').modal('hide');
+                loadEvents();
+                $('#eventForm')[0].reset();
+              } else {
+                Swal.fire('Error', res.message || 'Terjadi kesalahan.', 'error');
+              }
+            },
+            error: function () {
+              Swal.fire('Error', 'Gagal menghubungi server.', 'error');
+            }
+          });
+        });
+
+        $('#start_date').on('change', function () {
+          const startVal = $(this).val();
+          if (startVal) {
+            const start = new Date(startVal);
+            const end = new Date(start.getTime() + 60 * 60 * 1000);
+            const formatted = end.toISOString().slice(0, 16);
+            $('#end_date').val(formatted);
           }
-        },
-        error: function () {
-          Swal.fire('Error', 'Gagal menghubungi server.', 'error');
-        }
-      });
-    });
+        });
 
-    $('#start_date').on('change', function () {
-      const startVal = $(this).val();
-      if (startVal) {
-        const start = new Date(startVal);
-        const end = new Date(start.getTime() + 60 * 60 * 1000);
-        const formatted = end.toISOString().slice(0, 16);
-        $('#end_date').val(formatted);
-      }
-    });
-
-    $('#image').on('change', function () {
-      const file = this.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          $('#imagePreview').html(`<img src="${e.target.result}" class="img-thumbnail" style="max-height: 100px;">`);
-        };
-        reader.readAsDataURL(file);
-      } else {
-        $('#imagePreview').html('');
-      }
-    });
+        $('#image').on('change', function () {
+          const file = this.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              $('#imagePreview').html(`<img src="${e.target.result}" class="img-thumbnail" style="max-height: 100px;">`);
+            };
+            reader.readAsDataURL(file);
+          } else {
+            $('#imagePreview').html('');
+          }
+        });
+    }else{
+        window.location.href = "404";
+    }
+    
   });
 
   function loadEvents() {

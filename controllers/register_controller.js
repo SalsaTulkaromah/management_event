@@ -93,5 +93,3 @@ exports.validateEventGuid = async function (req, res) {
         return res.status(500).json({ valid: false, message: 'Kesalahan server' });
     }
 };
-
-

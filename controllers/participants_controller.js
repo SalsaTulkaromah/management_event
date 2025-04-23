@@ -280,5 +280,3 @@ exports.deleteParticipant = async function (req, res) {
     res.status(500).json({ error: "Terjadi kesalahan saat menghapus peserta." });
   }
 };
-
-  
