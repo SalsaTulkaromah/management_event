@@ -3,8 +3,11 @@ const db = require('../libs/db');
 exports.getAttendanceList = async (req, res) => {
   try {
     const result = await db.query(
-      `SELECT a.id,a.exchanged_at, a.participant_id, b.name, b.company_name, b.email, b.phone FROM tbl_souvenir a
-      join tbl_participants b on (a.participant_id = b.id) order by a.exchanged_at desc`
+      `SELECT a.id,a.exchanged_at, a.participant_id, b.name, b.company_name, b.email, b.phone,c.title, c.description
+      FROM tbl_souvenir a
+      join tbl_participants b on (a.participant_id = b.id) 
+      join tbl_events c on (b.event_id = c.id) and (c.isactive = 1)
+      order by a.exchanged_at desc`
     );
     res.json({ data: result.rows });
   } catch (err) {

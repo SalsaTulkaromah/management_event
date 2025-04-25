@@ -64,9 +64,10 @@ exports.findParticipantByQRCode = async (req, res) => {
 exports.getAttendanceList = async (req, res) => {
     try {
       const result = await db.query(`
-        SELECT p.id, p.name, p.email, p.phone, p.qrcode, a.scanned_at
+        SELECT p.id, p.name, p.email, p.phone, p.qrcode, a.scanned_at,c.title, c.description
         FROM tbl_attendance a
         JOIN tbl_participants p ON p.id = a.participant_id
+        join tbl_events c on (p.event_id = c.id) and (c.isactive = 1)
         ORDER BY a.scanned_at DESC
       `);
       res.json({ data: result.rows });

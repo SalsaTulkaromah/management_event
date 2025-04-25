@@ -63,6 +63,7 @@
             <thead style="background-color: #3f4f88;" class="text-white">
               <tr>
                 <th class="text-center align-middle">NO</th>
+                <th class="text-center align-middle">EVENT</th>
                 <th class="text-center align-middle">NAME</th>
                 <th class="text-center align-middle">E-MAIL</th>
                 <th class="text-center align-middle">PHONE NUMBER</th>
@@ -98,6 +99,7 @@
           data: null,
           render: (data, type, row, meta) => meta.row + 1
         },
+        { data: 'title' },
         { data: 'name' },
         { data: 'email' },
         { data: 'phone' },

@@ -183,14 +183,21 @@
           {
             data: null,
             render: function (data, type, row) {
+              const statusButton = row.isactive
+                ? `<button class="btn btn-success btn-sm me-1" onclick="toggleActive(${row.id}, 0)">Active</button>`
+                : `<button class="btn btn-danger btn-sm me-1" onclick="toggleActive(${row.id}, 1)">Inactived</button>`;
+            
               return `
                 <button class="btn btn-warning btn-sm me-1" onclick="editEventFromEncoded('${btoa(JSON.stringify(row))}')">
-                    <i class="ri-edit-2-line"></i>
+                  <i class="ri-edit-2-line"></i>
                 </button>
-                <button class="btn btn-danger btn-sm" onclick="deleteEvent(${row.id})"><i class="ri-delete-bin-5-line"></i></button>
+                <button class="btn btn-danger btn-sm me-1" onclick="deleteEvent(${row.id})">
+                  <i class="ri-delete-bin-5-line"></i>
+                </button>
+                ${statusButton}
               `;
-            }
-          }
+            }            
+          }          
         ],
         bDestroy: true
       });
@@ -247,4 +254,36 @@
       }
     });
   }
+
+  function toggleActive(id, isActive) {
+    const action = isActive ? 'Active' : 'Inactive';
+  
+    Swal.fire({
+      title: `Are you sure?`,
+      text: `Event will be ${action.toLowerCase()}d!`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: `Yes, ${action.toLowerCase()} it!`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: `/event/toggleActive/${id}`,
+          method: 'POST',
+          data: { isactive: isActive ? 1 : 0 }, // Ubah ke integer
+          success: function (res) {
+            if (res.success) {
+              Swal.fire(`${action}d!`, res.message, 'success');
+              loadEvents();
+            } else {
+              Swal.fire('Error', res.message || 'Terjadi kesalahan.', 'error');
+            }
+          },
+          error: function () {
+            Swal.fire('Error', 'Gagal menghubungi server.', 'error');
+          }
+        });
+      }
+    });
+  }
+  
 </script>

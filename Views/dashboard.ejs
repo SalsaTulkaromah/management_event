@@ -2,65 +2,168 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
 
 <%- contentFor('body') %>
-<div class="container-fluid px-4">
-  <h4 class="mb-4 fw-bold">DASHBOARD ANALYSIS</h4>
+<div class="row project-wrapper">
+  <div class="col-xxl-12">
+    <h4 class="mb-4 fw-bold">DASHBOARD ANALYSIS</h4>
+    <div class="row">
+      
+      <!-- Card 1: Jumlah Partisipan -->
+      <div class="col-xl-3">
+        <div class="card card-animate">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="avatar-sm flex-shrink-0">
+                <span class="avatar-title bg-soft-success text-success rounded-2 fs-2">
+                  <i data-feather="users" class="text-success"></i>
+                </span>
+              </div>
+              <div class="flex-grow-1 overflow-hidden ms-3">
+                <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Jumlah Partisipan</p>
+                <div class="d-flex align-items-center mb-3">
+                  <h4 class="fs-4 flex-grow-1 mb-0">
+                    <span class="counter-value" data-target="200">0</span> Orang
+                  </h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-  
+      <!-- Card 2: Jumlah Responden -->
+      <div class="col-xl-3">
+        <div class="card card-animate">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="avatar-sm flex-shrink-0">
+                <span class="avatar-title bg-soft-info text-info rounded-2 fs-2">
+                  <i data-feather="edit-2" class="text-info"></i>
+                </span>
+              </div>
+              <div class="flex-grow-1 overflow-hidden ms-3">
+                <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Jumlah Responden</p>
+                <div class="d-flex align-items-center mb-3">
+                  <h4 class="fs-4 flex-grow-1 mb-0">
+                    <span class="counter-value" data-target="150">0</span> Orang
+                  </h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-  <!-- Summary Card -->
-  <div class="row g-3 mb-4">
-    <div class="col-md-3">
-      <div class="card shadow-sm p-3">
-        <p class="mb-1 fw-semibold">Jumlah Partisipan</p>
+      <!-- Card 3: Jumlah Event -->
+      <div class="col-xl-3">
+        <div class="card card-animate">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="avatar-sm flex-shrink-0">
+                <span class="avatar-title bg-soft-warning text-warning rounded-2 fs-2">
+                  <i data-feather="calendar" class="text-warning"></i>
+                </span>
+              </div>
+              <div class="flex-grow-1 overflow-hidden ms-3">
+                <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Jumlah Event</p>
+                <div class="d-flex align-items-center mb-3">
+                  <h4 class="fs-4 flex-grow-1 mb-0">
+                    <span class="counter-value" data-target="10">0</span> Event
+                  </h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card shadow-sm p-3">
-        <p class="mb-1 fw-semibold">Jumlah Responden</p>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card shadow-sm p-3">
-        <p class="mb-1 fw-semibold">Jumlah Event</p>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card shadow-sm p-3">
-        <p class="mb-1 fw-semibold">Rata-Rata Nilai CSAT</p>
-      </div>
-    </div>
-  </div>
 
-  <!-- Chart Row -->
-  <div class="row g-4">
-    <!-- Distribusi Kepuasan Pelanggan -->
-    <div class="col-md-4">
-      <div class="card p-3 shadow-sm h-100">
-        <h6 class="mb-3">Distribusi Kepuasan Pelanggan</h6>
-        <canvas id="kepuasanChart" height="200"></canvas>
+      <!-- Card 4: Rata-Rata Nilai CSAT -->
+      <div class="col-xl-3">
+        <div class="card card-animate">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="avatar-sm flex-shrink-0">
+                <span class="avatar-title bg-soft-danger text-danger rounded-2 fs-2">
+                  <i data-feather="star" class="text-danger"></i>
+                </span>
+              </div>
+              <div class="flex-grow-1 overflow-hidden ms-3">
+                <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Rata-Rata Nilai CSAT</p>
+                <div class="d-flex align-items-center mb-3">
+                  <h4 class="fs-4 flex-grow-1 mb-0">85.90%</h4>Sangat Puas
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </div> <!-- end row -->
 
-    <!-- Perbandingan Nilai CSAT -->
-    <div class="col-md-4">
-      <div class="card p-3 shadow-sm h-100">
-        <h6 class="mb-3">Perbandingan Nilai CSAT Event</h6>
-        <canvas id="csatComparisonChart" height="200"></canvas>
-      </div>
-    </div>
+    <div class="row">
+      <div class="col-xl-4">
+        <div class="card card-height-100">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0 flex-grow-1">Distribusi Kepuasan Pelanggan</h4>
+                <div class="flex-shrink-0">
+                    <div class="dropdown card-header-dropdown">
+                        <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                            <span class="text-muted">Report<i class="mdi mdi-chevron-down ms-1"></i></span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <a class="dropdown-item" href="#">Download Report</a>
+                            <a class="dropdown-item" href="#">Export</a>
+                            <a class="dropdown-item" href="#">Import</a>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- end card header -->
+    
+            <div class="card-body">
+                <div id="kepuasan-pelanggan-chart"
+                    data-colors='["--vz-primary", "--vz-success", "--vz-warning", "--vz-danger", "--vz-info"]'
+                    class="apex-charts" dir="ltr">
+                </div>
+            </div>
+          </div> 
+      </div> 
 
-    <!-- Status Approval Partisipan -->
-    <div class="col-md-4">
-      <div class="card p-3 shadow-sm h-100">
-        <h6 class="mb-3">Status Approval Partisipan</h6>
-        <canvas id="approvalChart" height="200"></canvas>
+      <div class="col-xl-4">
+        <div class="card card-height-100">
+            <div class="card-header ">
+                <h4 class="card-title mb-0">Perbandingan Nilai CSAT Event</h4>
+            </div>
+            <div class="card-body text-center" style="padding-top: 45px;"">
+                <canvas id="bar" class="chartjs-chart"></canvas>
+            </div>
+        </div>
+      </div> <!-- end col -->
+
+      <div class="col-xl-4">
+        <div class="card card-height-100">
+            <div class="card-header">
+                <h4 class="card-title mb-0">Status Approval Partisipan</h4>
+            </div>
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div style="width: 50%;">
+                    <canvas id="approvalChart" style="max-height: 180px;"></canvas>
+                </div>
+                <div>
+                    <ul class="list-unstyled mb-0">
+                        <li><span class="badge bg-primary me-2" style="width:12px; height:12px; display:inline-block;"></span> Approved</li>
+                        <li><span class="badge bg-secondary me-2" style="width:12px; height:12px; display:inline-block;"></span> Pending</li>
+                        <li><span class="badge bg-dark me-2" style="width:12px; height:12px; display:inline-block;"></span> Rejected</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
+    </div> <!-- end row -->
 
 <%- contentFor('FooterJs') %>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="assets/libs/apexcharts/apexcharts.min.js"></script>
+<script src="assets/js/pages/apexcharts-bar.init.js"></script>
+
 <script type="text/javascript">
   var role = '<%-event_objectCookie.role%>';
   $(document).ready(function() {
@@ -69,5 +172,124 @@
     }else{
         window.location.href = "404";
     }
+  });
+</script>
+
+<script>
+  var options = {
+      chart: {
+          type: 'donut',
+          height: 300
+      },
+      series: [45, 30, 15, 10], // Sangat Puas, Puas, Cukup, Tidak Puas
+      labels: ['Sangat Puas', 'Puas', 'Cukup', 'Tidak Puas'],
+      colors: ['#556ee6', '#34c38f', '#f1b44c', '#f46a6a'],
+      dataLabels: {
+          enabled: true,
+          formatter: function (val) {
+              return val.toFixed(1) + '%';
+          }
+      },
+      legend: {
+          position: 'bottom'
+      },
+      plotOptions: {
+          pie: {
+              donut: {
+                  size: '50%' // Semakin kecil, semakin tebal lingkarannya
+              }
+          }
+      }
+  };
+
+  var chart = new ApexCharts(document.querySelector("#kepuasan-pelanggan-chart"), options);
+  chart.render();
+</script>
+
+<script>
+  // Ambil warna dari CSS variable theme
+  function getChartColorsArray(chartId) {
+      var colors = document.getElementById(chartId).getAttribute("data-colors");
+      if (colors) {
+          colors = JSON.parse(colors.replace(/ /g, "").replace(/'/g, '"'));
+          return colors.map(function (value) {
+              if (value.indexOf("--") !== -1) {
+                  var cssVar = getComputedStyle(document.documentElement).getPropertyValue(value).trim();
+                  return cssVar || value;
+              }
+              return value;
+          });
+      } else {
+          console.warn('data-colors attribute not found on: ' + chartId);
+          return [];
+      }
+  }
+
+  var barColors = getChartColorsArray("bar");
+  var ctx = document.getElementById('bar').getContext('2d');
+  var barChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+          labels: ['Meetup', 'Jennifer APM Event'],
+          datasets: [{
+              label: 'CSAT',
+              data: [70, 95],
+              backgroundColor: ['#556ee6', '#34c38f']
+          }]
+      },
+      options: {
+          responsive: true,
+          scales: {
+              y: {
+                  beginAtZero: true,
+                  max: 100
+              }
+          },
+          plugins: {
+              legend: {
+                  display: false
+              }
+          }
+      }
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const ctxApprov = document.getElementById('approvalChart').getContext('2d');
+    new Chart(ctxApprov, {
+      type: 'doughnut',
+      data: {
+        labels: ['Approved', 'Pending', 'Rejected'],
+        datasets: [{
+          data: [70, 20, 10],
+          backgroundColor: ['#4a77d4', '#a5b4fc', '#1e2a49'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        cutout: '70%',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return `${context.label}: ${context.raw}%`;
+              }
+            }
+          },
+          doughnutlabel: {
+            labels: [
+              {
+                text: '70%',
+                font: {
+                  size: '20'
+                }
+              }
+            ]
+          }
+        }
+      }
+    });
   });
 </script>

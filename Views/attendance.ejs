@@ -32,8 +32,9 @@
               <th class="text-center align-middle">COMPANY</th>
               <th class="text-center align-middle">E-MAIL</th>
               <th class="text-center align-middle">PHONE NUMBER</th>
-              <th class="text-center align-middle">STATUS</th>
+              <th class="text-center align-middle">ATTENDANCE</th>
               <th class="text-center align-middle">ATTENDANCE TIME</th>
+              <th class="text-center align-middle">EMAIL SURVEY</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -109,7 +110,14 @@
               render: function (data) {
                 return data ? new Date(data).toLocaleString() : '-';
               }
-            }
+            },
+            {
+              data: 'isemail',
+              render: function (data) {
+                const badgeClass = data === true ? 'bg-success' : 'bg-danger';
+                return `<span class="badge ${badgeClass}">${data}</span>`;
+              }
+            },
           ],
           dom: 'Blfrtip',
           buttons: [
@@ -122,6 +130,7 @@
           ],
           bDestroy: true
         });
+        
   
         // Tempatkan tombol export ke container
         $('#attendanceTable_wrapper .dt-buttons').appendTo('#exportButtonContainer');
@@ -129,7 +138,7 @@
         // Hapus filter sebelumnya
         $('#statusFilter').remove();
         $('#eventFilter').remove();
-  
+        $('#sendSurveyBtn').remove();
         // Tambahkan kembali dropdown filter Event
         const eventFilterHtml = `
           <select id="eventFilter" class="btn btn-soft-primary ms-2" style="width: auto; display:">
@@ -142,15 +151,59 @@
         const statusFilterHtml = `
           <div class="dropdown">
             <select id="statusFilter" class="btn btn-soft-primary ms-2" style="width: auto; display:">
-              <option value="">All Status</option>
+              <option value="">All Attendance</option>
               <option value="Attended">Attended</option>
               <option value="Absent">Absent</option>
             </select>
           </div>
         `;
   
-        $('#exportButtonContainer').append(eventFilterHtml + statusFilterHtml);
-  
+        $('#exportButtonContainer').append(eventFilterHtml + statusFilterHtml + `
+        <button id="sendSurveyBtn" class="btn btn-soft-success ms-2">
+          <i class="ri-mail-send-line"></i> Kirim Email Survey
+        </button>
+      `);
+        
+      $(document).on('click', '#sendSurveyBtn', function () {
+        const selectedEventId = $('#eventFilter').val();
+        if (!selectedEventId) {
+          Swal.fire('Perhatian', 'Silakan pilih event terlebih dahulu.', 'warning');
+          return;
+        }
+      
+        Swal.fire({
+          title: 'Kirim Survey?',
+          text: "Email survey akan dikirim ke semua peserta yang hadir.",
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Ya, kirim',
+          cancelButtonText: 'Batal'
+        }).then(function (result) {
+          if (result.isConfirmed) {
+            $.ajax({
+              url: '/attendance/sendSurveyEmail',
+              method: 'POST',
+              contentType: 'application/json',
+              beforeSend: function () {
+                $("#preloader_xx").show();
+              },
+              complete: function () {
+                $('#preloader_xx').hide();
+              },
+              data: JSON.stringify({ event_id: selectedEventId }),
+              success: function (data) {
+                Swal.fire('Berhasil!', data.message, 'success');
+              },
+              error: function (xhr, status, error) {
+                console.error(error);
+                Swal.fire('Error', 'Gagal mengirim email.', 'error');
+              }
+            });
+          }
+        });
+      });
+      
+      
         // Isi dropdown event secara dinamis
         loadEventFilterOptions(selectedEventId);
   

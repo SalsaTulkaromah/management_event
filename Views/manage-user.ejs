@@ -1,0 +1,184 @@
+<%- contentFor('HeaderCss') %>
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<%- contentFor('body') %>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-header container-fluid">
+        <div class="row g-2 justify-content-between align-items-center">
+          <div class="col-md-auto">
+            <h5 class="card-title mb-0">MANAGE USERS</h5>
+          </div>
+          <div class="col-md-auto">
+            <button class="btn btn-soft-success" data-bs-toggle="modal" data-bs-target="#modalAddUser">
+              <i class="ri-user-add-line align-bottom me-1"></i> Add User
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <table id="userTable" class="table table-bordered dt-responsive nowrap table-striped text-center align-middle" style="width:100%">
+          <thead style="background-color: #3f4f88;" class="text-white">
+            <tr>
+              <th class="text-center align-middle">Full Name</th>
+              <th class="text-center align-middle">Email</th>
+              <th class="text-center align-middle">Password</th>
+              <th class="text-center align-middle">Role</th>
+              <th class="text-center align-middle">Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Add/Edit User -->
+<div class="modal fade" id="modalAddUser" tabindex="-1" aria-labelledby="modalAddUserLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="userForm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add / Edit User</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="id" id="userId">
+          <div class="mb-3">
+            <label for="fullname" class="form-label">Full Name</label>
+            <input type="text" class="form-control" name="fullname" id="fullname" required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" id="email" required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Password</label>
+            <input type="text" class="form-control" name="password" id="password" required>
+          </div>
+          <div class="mb-3">
+            <label for="role" class="form-label">Role</label>
+            <select class="form-select" name="role" id="role" required>
+              <option value="">-- Select Role --</option>
+              <option value="Admin">Admin</option>
+              <option value="PIC">PIC</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Save User</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- contentFor('FooterJs') %>
+<script>
+  $(document).ready(function () {
+    loadUsers();
+
+    // Form submit for Add/Edit User
+    $('#userForm').submit(function (e) {
+      e.preventDefault();
+      const form = $('#userForm')[0];
+      const formData = new FormData(form);
+
+      $.ajax({
+        url: '/user/upsertUser',
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (res) {
+          if (res.success) {
+            Swal.fire('Success', res.message, 'success');
+            $('#modalAddUser').modal('hide');
+            loadUsers();
+            $('#userForm')[0].reset();
+          } else {
+            Swal.fire('Error', res.message || 'Terjadi kesalahan.', 'error');
+          }
+        },
+        error: function () {
+          Swal.fire('Error', 'Gagal menghubungi server.', 'error');
+        }
+      });
+    });
+  });
+
+  // Load all users from the database
+  function loadUsers() {
+    $.get('/user/getUsers', function (res) {
+      const data = res.data;
+      $('#userTable').DataTable({
+        scrollX: true,
+        data: data,
+        columns: [
+          { data: 'fullname' },
+          { data: 'email' },
+          { data: 'password' },
+          { data: 'role' },
+          {
+            data: null,
+            render: function (data, type, row) {
+              return `
+                <button class="btn btn-warning btn-sm me-1" onclick="editUser(${row.id})">
+                    <i class="ri-edit-2-line"></i>
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="deleteUser(${row.id})"><i class="ri-delete-bin-5-line"></i></button>
+              `;
+            }
+          }
+        ],
+        bDestroy: true
+      });
+    });
+  }
+
+  // Edit user data
+  function editUser(id) {
+    $.get(`/user/getUserById/${id}`, function (res) {
+      const userData = res.data;
+      $('#userId').val(userData.id);
+      $('#fullname').val(userData.fullname);
+      $('#email').val(userData.email);
+      $('#password').val(userData.password);
+      $('#role').val(userData.role);
+      $('#modalAddUser').modal('show');
+    });
+  }
+
+  // Delete user
+  function deleteUser(id) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "User will be deleted!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: `/user/deleteUser/${id}`,
+          method: 'POST',
+          success: function (res) {
+            if (res.success) {
+              Swal.fire('Deleted!', res.message, 'success');
+              loadUsers();
+            } else {
+              Swal.fire('Error', res.message, 'error');
+            }
+          },
+          error: function () {
+            Swal.fire('Error', 'Gagal menghubungi server.', 'error');
+          }
+        });
+      }
+    });
+  }
+</script>

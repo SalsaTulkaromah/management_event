@@ -131,3 +131,28 @@ exports.deleteEvent = async function (req, res) {
     res.status(500).json({ error: "Terjadi kesalahan saat menghapus event." });
   }
 };
+
+exports.toggleActive = async function (req, res) {
+  const id = req.params.id;
+  let { isactive } = req.body;
+
+  // Konversi ke integer (pastikan benar antara 1 dan 0)
+  isactive = parseInt(isactive); // Atau +isactive untuk singkat
+
+  try {
+    const event = await db.query(`SELECT * FROM tbl_events WHERE id = $1`, [id]);
+    if (event.rowCount === 0) {
+      return res.status(404).json({ success: false, message: "Event tidak ditemukan." });
+    }
+
+    await db.query(`UPDATE tbl_events SET isactive = $1 WHERE id = $2`, [isactive, id]);
+
+    res.status(200).json({
+      success: true,
+      message: `Event berhasil di-${isactive === 1 ? 'aktifkan' : 'nonaktifkan'}.`
+    });
+  } catch (error) {
+    console.error("Error updating isactive:", error);
+    res.status(500).json({ success: false, message: "Terjadi kesalahan saat memperbarui status event." });
+  }
+};

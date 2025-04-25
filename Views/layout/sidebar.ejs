@@ -73,15 +73,20 @@
                         <ul class="nav nav-sm flex-column">
                             <% if (event_objectCookie.role == "Admin") { %>
                                 <li class="nav-item">
-                                    <a href="manage-event" class="nav-link" data-key="t-manage-event"> Event Form </a>
+                                    <a href="manage-user" class="nav-link" data-key="t-manage-user">Users</a>
+                                </li>
+                            <%}  %>
+                            <% if (event_objectCookie.role == "Admin") { %>
+                                <li class="nav-item">
+                                    <a href="manage-event" class="nav-link" data-key="t-manage-event">Event Form</a>
                                 </li>
                             <%}  %>
                             <li class="nav-item">
-                                <a href="manage-spin" class="nav-link" data-key="t-manage-spin"> Spin The Wheel </a>
+                                <a href="manage-spin" class="nav-link" data-key="t-manage-spin">Spin The Wheel</a>
                             </li>
                             <% if (event_objectCookie.role == "Admin") { %>
                                 <li class="nav-item">
-                                    <a href="manage-surveyresponses" class="nav-link" data-key="t-manage-surveyresponses"> Feedback Responses </a>
+                                    <a href="manage-surveyresponses" class="nav-link" data-key="t-manage-surveyresponses">Feedback Responses</a>
                                 </li>
                             <%}  %>
                         </ul>

@@ -111,6 +111,19 @@ route.get('/spin', (req, res, next) => {
     res.render('spin', { title: 'Spin The Wheel', layout: false })
 })
 
+route.get('/manage-user', (req, res) => {
+    if (req.cookies.event_objectCookie) {
+        res.render('manage-user', {
+            title: 'Manage User',
+            page_title: 'Manage User',
+            folder: 'Event',
+            event_objectCookie: req.cookies.event_objectCookie
+        });
+    } else {
+        res.render('auth/login', { title: 'Login', layout: false, flag : 'Expired' });
+    }
+});
+
 route.get('/manage-event', (req, res) => {
     if (req.cookies.event_objectCookie) {
         res.render('manage-event', {
