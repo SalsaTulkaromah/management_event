@@ -118,15 +118,24 @@ exports.sendSurveyEmail = async (req, res) => {
       const mailOptions = {
         from: `"PT. Sindigilive Teknologi Kreatif" <${process.env.GMAIL_USER}>`,
         to: p.email,
-        subject: `Survey Event ${p.title}`,
+        subject: `Permohonan Pengisian Survei Kepuasan Event ${p.title}`,
         html: `
-          <p>Dear ${p.name},</p>
-          <p>Terima kasih telah menghadiri event <strong>${p.title}</strong>.</p>
-          <p>Kami mohon waktu Anda sebentar untuk mengisi survey berikut:</p>
-          <p><a href="http://localhost:9000/survey?participant_code=${p.qrcode}" target="_blank">Klik di sini untuk mengisi survey</a></p>
-          <p>Terima kasih atas partisipasi Anda!</p>
+          <p>Yth. ${p.name},</p>
+  
+          <p>Terima kasih kami sampaikan atas kehadiran Anda dalam event <strong>${p.title}</strong>. Kami sangat menghargai partisipasi Anda dalam acara tersebut.</p>
+  
+          <p>Sebagai bagian dari upaya kami untuk terus meningkatkan kualitas layanan, kami mohon kesediaan Anda untuk meluangkan waktu sejenak guna mengisi survei kepuasan peserta yang dapat diakses melalui tautan berikut:</p>
+  
+          <p><a href="http://localhost:9000/survey?participant_code=${p.qrcode}" target="_blank">Klik di sini untuk mengisi survei</a></p>
+  
+          <p>Survei ini akan sangat membantu kami dalam memahami pengalaman Anda dan memperbaiki acara-acara mendatang.</p>
+  
+          <p>Terima kasih atas perhatian dan kerjasama Anda. Kami berharap dapat menyambut Anda kembali di acara kami yang berikutnya.</p>
+  
+          <p>Hormat kami,</p>
+          <p><strong>Panitia ${eventTitle}</strong><br>PT. Sindigilive Teknologi Kreatif</p>
         `
-      };
+    };    
       try {
         // Kirim email
         await transporter.sendMail(mailOptions);

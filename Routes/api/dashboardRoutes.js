@@ -2,6 +2,6 @@ const express = require('express');
 const route = express.Router();
 const dashboardController = require('../../controllers/dashboard_controller');
 
-route.get('/dashboard', dashboardController.getDashboard);
+route.post('/getEventStats', dashboardController.getEventStats);
 
 module.exports = route;

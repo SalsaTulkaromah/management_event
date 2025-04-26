@@ -4,7 +4,17 @@
 <%- contentFor('body') %>
 <div class="row project-wrapper">
   <div class="col-xxl-12">
-    <h4 class="mb-4 fw-bold">DASHBOARD ANALYSIS</h4>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <h4 class="mb-0 fw-bold">DASHBOARD ANALYSIS</h4>
+        </div>
+        <div class="col-md-6 text-end">
+          <select id="eventFilterDashboard" class="form-select d-inline-block" style="max-width: 330px;">
+            <option value="">All Events</option>
+            <!-- Options akan ditambahkan melalui JavaScript -->
+          </select>
+        </div>
+      </div>    
     <div class="row">
       
       <!-- Card 1: Jumlah Partisipan -->
@@ -18,10 +28,10 @@
                 </span>
               </div>
               <div class="flex-grow-1 overflow-hidden ms-3">
-                <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Jumlah Partisipan</p>
+                <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Jumlah Registrasi</p>
                 <div class="d-flex align-items-center mb-3">
                   <h4 class="fs-4 flex-grow-1 mb-0">
-                    <span class="counter-value" data-target="200">0</span> Orang
+                    <span class="counter-value" id="jmlPartisipan">0</span> Orang
                   </h4>
                 </div>
               </div>
@@ -29,7 +39,27 @@
           </div>
         </div>
       </div>
-
+      <div class="col-xl-3">
+        <div class="card card-animate">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="avatar-sm flex-shrink-0">
+                <span class="avatar-title bg-soft-success text-success rounded-2 fs-2">
+                  <i data-feather="users" class="text-success"></i>
+                </span>
+              </div>
+              <div class="flex-grow-1 overflow-hidden ms-3">
+                <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Jumlah Kehadiran</p>
+                <div class="d-flex align-items-center mb-3">
+                  <h4 class="fs-4 flex-grow-1 mb-0">
+                    <span class="counter-value" id="jmlKehadiran">0</span> Orang
+                  </h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- Card 2: Jumlah Responden -->
       <div class="col-xl-3">
         <div class="card card-animate">
@@ -44,7 +74,7 @@
                 <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Jumlah Responden</p>
                 <div class="d-flex align-items-center mb-3">
                   <h4 class="fs-4 flex-grow-1 mb-0">
-                    <span class="counter-value" data-target="150">0</span> Orang
+                    <span class="counter-value" id="jmlResponden">0</span> Orang
                   </h4>
                 </div>
               </div>
@@ -67,7 +97,7 @@
                 <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Jumlah Event</p>
                 <div class="d-flex align-items-center mb-3">
                   <h4 class="fs-4 flex-grow-1 mb-0">
-                    <span class="counter-value" data-target="10">0</span> Event
+                    <span class="counter-value" id="jmlEvent">0</span> Event
                   </h4>
                 </div>
               </div>
@@ -166,13 +196,76 @@
 
 <script type="text/javascript">
   var role = '<%-event_objectCookie.role%>';
-  $(document).ready(function() {
-    if (role == "Admin"){
-        $('body').show(); // Tampilkan konten jika pengguna adalah admin
-    }else{
-        window.location.href = "404";
+  var token = '<%-event_objectCookie.token%>';
+
+  $(document).ready(async function () {
+    if (role === "Admin") {
+      $('body').show();
+      await loadEventFilterOptionsDashboard();
+      await loadDashboardData(); // pertama kali load semua
+    } else {
+      window.location.href = "404";
     }
+
+    // Ubah filter
+    $('#eventFilterDashboard').on('change', function () {
+      loadDashboardData(); // reload dashboard sesuai event
+    });
   });
+
+  async function loadEventFilterOptionsDashboard() {
+    try {
+      const res = await fetch('/event/getEvents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+
+      const events = await res.json();
+      const $filter = $('#eventFilterDashboard');
+      $filter.empty();
+      $filter.append('<option value="0">All Event</option>');
+
+      events.data.forEach(ev => {
+        $filter.append(`<option value="${ev.id}">${ev.title}</option>`);
+      });
+
+    } catch (err) {
+      console.error('Gagal memuat filter event:', err);
+    }
+  }
+
+  async function loadDashboardData() {
+    const eventId = $('#eventFilterDashboard').val();
+    console.log(eventId);
+    try {
+      const res = await $.ajax({
+        url: '/dashboard/getEventStats', // ganti sesuai endpoint kamu
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ event_id: eventId }),
+      });
+      const data =res.data[0];
+      // Misalnya kamu update angka dan chart:
+      $('#jmlPartisipan').text(data.registrations);
+      $('#jmlKehadiran').text(data.attendance);
+      $('#jmlResponden').text(data.survey_count);
+      $('#jmlEvent').text(data.event_data);
+
+      updateChart(res.chartData);
+
+    } catch (err) {
+      console.error("Gagal memuat data dashboard:", err);
+    }
+  }
+
+  // Contoh update chart
+  function updateChart(data) {
+    if (window.myChartInstance) {
+      window.myChartInstance.data.datasets[0].data = data;
+      window.myChartInstance.update();
+    }
+  }
 </script>
 
 <script>

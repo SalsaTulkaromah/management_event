@@ -131,44 +131,60 @@
   <script src="assets/js/app.js"></script>
 
         <script>
-            $(document).ready(function () {
+          $(document).ready(function () {
+            // Toggle password visibility
+            $('#password-addon').click(function () {
+              const passwordInput = $('#password-input');
+              const type = passwordInput.attr('type') === 'password' ? 'text' : 'password';
+              passwordInput.attr('type', type);
+              
+              // Toggle the icon
+              const icon = $(this).find('i');
+              if (type === 'password') {
+                icon.removeClass('ri-eye-off-fill').addClass('ri-eye-fill');
+              } else {
+                icon.removeClass('ri-eye-fill').addClass('ri-eye-off-fill');
+              }
+            });
+          
+            // Form submission
             $('#loginForm').submit(function (e) {
-                e.preventDefault();
-                const username = $('#username').val();
-                const password = $('#password-input').val();
-
-                $.ajax({
+              e.preventDefault();
+              const username = $('#username').val();
+              const password = $('#password-input').val();
+          
+              $.ajax({
                 url: '/auth/login',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({ username, password }),
                 success: function (response) {
-                    if (response.success) {
+                  if (response.success) {
                     if (response.user.role == "Admin") {
-                        window.location.href = "/";
+                      window.location.href = "/";
                     } else {
-                        window.location.href = "/scan-participant";
+                      window.location.href = "/scan-participant";
                     }
-                    } else {
+                  } else {
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Login Gagal',
-                        text: 'Username atau Password tidak sesuai',
-                        confirmButtonColor: '#d33'
+                      icon: 'error',
+                      title: 'Login Gagal',
+                      text: 'Username atau Password tidak sesuai',
+                      confirmButtonColor: '#d33'
                     });
-                    }
+                  }
                 },
                 error: function () {
-                    Swal.fire({
+                  Swal.fire({
                     icon: 'error',
                     title: 'Kesalahan Server',
                     text: 'Terjadi kesalahan saat menghubungi server. Silakan coba lagi.',
                     confirmButtonColor: '#d33'
-                    });
+                  });
                 }
-                });
+              });
             });
-            });
+          });          
         </script>
     </body>
 </html>
