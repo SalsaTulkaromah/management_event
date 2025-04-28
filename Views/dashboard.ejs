@@ -15,141 +15,165 @@
           </select>
         </div>
       </div>    
+
     <div class="row">
-      
       <!-- Card 1: Jumlah Partisipan -->
-      <div class="col-xl-3">
-        <div class="card card-animate">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <div class="avatar-sm flex-shrink-0">
-                <span class="avatar-title bg-soft-success text-success rounded-2 fs-2">
-                  <i data-feather="users" class="text-success"></i>
-                </span>
-              </div>
-              <div class="flex-grow-1 overflow-hidden ms-3">
-                <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Jumlah Registrasi</p>
-                <div class="d-flex align-items-center mb-3">
-                  <h4 class="fs-4 flex-grow-1 mb-0">
-                    <span class="counter-value" id="jmlPartisipan">0</span> Orang
-                  </h4>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-xl-3">
-        <div class="card card-animate">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <div class="avatar-sm flex-shrink-0">
-                <span class="avatar-title bg-soft-success text-success rounded-2 fs-2">
-                  <i data-feather="users" class="text-success"></i>
-                </span>
-              </div>
-              <div class="flex-grow-1 overflow-hidden ms-3">
-                <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Jumlah Kehadiran</p>
-                <div class="d-flex align-items-center mb-3">
-                  <h4 class="fs-4 flex-grow-1 mb-0">
-                    <span class="counter-value" id="jmlKehadiran">0</span> Orang
-                  </h4>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Card 2: Jumlah Responden -->
-      <div class="col-xl-3">
-        <div class="card card-animate">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <div class="avatar-sm flex-shrink-0">
-                <span class="avatar-title bg-soft-info text-info rounded-2 fs-2">
-                  <i data-feather="edit-2" class="text-info"></i>
-                </span>
-              </div>
-              <div class="flex-grow-1 overflow-hidden ms-3">
-                <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Jumlah Responden</p>
-                <div class="d-flex align-items-center mb-3">
-                  <h4 class="fs-4 flex-grow-1 mb-0">
-                    <span class="counter-value" id="jmlResponden">0</span> Orang
-                  </h4>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 3: Jumlah Event -->
-      <div class="col-xl-3">
-        <div class="card card-animate">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <div class="avatar-sm flex-shrink-0">
-                <span class="avatar-title bg-soft-warning text-warning rounded-2 fs-2">
-                  <i data-feather="calendar" class="text-warning"></i>
-                </span>
-              </div>
-              <div class="flex-grow-1 overflow-hidden ms-3">
-                <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Jumlah Event</p>
-                <div class="d-flex align-items-center mb-3">
-                  <h4 class="fs-4 flex-grow-1 mb-0">
-                    <span class="counter-value" id="jmlEvent">0</span> Event
-                  </h4>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 4: Rata-Rata Nilai CSAT -->
-      <div class="col-xl-3">
-        <div class="card card-animate">
-          <div class="card-body">
-            <div class="d-flex align-items-center">
-              <div class="avatar-sm flex-shrink-0">
-                <span class="avatar-title bg-soft-danger text-danger rounded-2 fs-2">
-                  <i data-feather="star" class="text-danger"></i>
-                </span>
-              </div>
-              <div class="flex-grow-1 overflow-hidden ms-3">
-                <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Rata-Rata Nilai CSAT</p>
-                <div class="d-flex align-items-center mb-3">
-                  <h4 class="fs-4 flex-grow-1 mb-0">85.90%</h4>Sangat Puas
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> <!-- end row -->
-
-    <div class="row">
       <div class="col-xl-4">
+        <!-- card -->
+        <div class="card card-animate">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1 overflow-hidden">
+                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">
+                            Jumlah Registrasi
+                        </p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-end justify-content-between mt-4">
+                    <div>
+                        <h4 class="fs-22 fw-semibold ff-secondary mb-3">
+                            <span class="counter-value" id="jmlPartisipan">0</span> Orang
+                        </h4>
+                        <a href="javascript:void(0);" class="text-decoration-underline" onclick="openParticipantsModal()">
+                            View Details
+                        </a>
+                    </div>
+                    <div class="avatar-sm flex-shrink-0">
+                        <span class="avatar-title bg-soft-success rounded fs-3">
+                            <i class="bx bx-user text-success"></i>
+                        </span>
+                    </div>
+                </div>
+            </div><!-- end card body -->
+        </div><!-- end card -->
+      </div><!-- end col -->
+
+      <!-- Card 2: Jumlah Kehadiran -->
+      <div class="col-xl-4">
+        <!-- card -->
+        <div class="card card-animate">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1 overflow-hidden">
+                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Jumlah Kehadiran</p>
+                    </div>
+                    <div class="flex-shrink-0">
+                    </div>
+                </div>
+                <div class="d-flex align-items-end justify-content-between mt-4">
+                    <div>
+                        <h4 class="fs-22 fw-semibold ff-secondary mb-4">
+                            <span class="counter-value" id="jmlKehadiran">0</span> Orang
+                        </h4>
+                        <a href="javascript:void(0);" class="text-decoration-underline" onclick="openKehadiranModal()" style="text-decoration: none; color: inherit;">
+                            View Details
+                        </a>
+                    </div>
+                    <div class="avatar-sm flex-shrink-0">
+                        <span class="avatar-title bg-soft-success rounded fs-3">
+                            <i class="bx bx-user-check text-success"></i>
+                        </span>
+                    </div>
+                </div>
+            </div><!-- end card body -->
+        </div><!-- end card -->
+      </div><!-- end col -->    
+
+      <!-- Card 3: Jumlah Responden -->
+      <div class="col-xl-4">
+        <!-- card -->
+        <div class="card card-animate">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1 overflow-hidden">
+                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Jumlah Responden</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-end justify-content-between mt-4">
+                    <div>
+                        <h4 class="fs-22 fw-semibold ff-secondary mb-4">
+                            <span class="counter-value" id="jmlResponden">0</span> Orang
+                        </h4>
+                        <a href="javascript:void(0);" class="text-decoration-underline" onclick="openRespondenModal()" style="text-decoration: none; color: inherit;">
+                            View Details
+                        </a>
+                    </div>
+                    <div class="avatar-sm flex-shrink-0">
+                        <span class="avatar-title bg-soft-info rounded fs-3">
+                            <i class="bx bx-edit-alt text-info"></i>
+                        </span>
+                    </div>
+                </div>
+            </div><!-- end card body -->
+        </div><!-- end card -->
+      </div><!-- end col -->    
+
+      <!-- Card 4: Jumlah Event -->
+      <div class="col-xl-6">
+        <!-- card -->
+        <div class="card card-animate">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1 overflow-hidden">
+                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Jumlah Event</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-end justify-content-between mt-4">
+                    <div>
+                        <h4 class="fs-22 fw-semibold ff-secondary mb-4">
+                            <span class="counter-value" id="jmlEvent">0</span> Event
+                        </h4>
+                        <a href="javascript:void(0);" class="text-decoration-underline" onclick="openEventModal()" style="text-decoration: none; color: inherit;">
+                            View Event Details
+                        </a>
+                    </div>
+                    <div class="avatar-sm flex-shrink-0">
+                        <span class="avatar-title bg-soft-warning rounded fs-3">
+                            <i class="bx bx-calendar text-warning"></i>
+                        </span>
+                    </div>
+                </div>
+            </div><!-- end card body -->
+        </div><!-- end card -->
+      </div><!-- end col -->
+
+      <!-- Card 5: Nilai CSAT -->
+      <div class="col-xl-6">
+        <!-- card -->
+        <div class="card card-animate">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1 overflow-hidden">
+                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Hasil Score CSAT</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-end justify-content-between mt-4">
+                    <div>
+                        <h4 class="fs-22 fw-semibold ff-secondary mb-4">
+                            <span class="counter-value" id="jmlCSAT">0</span> 
+                        </h4>
+                        <p class="text-muted mb-0">Sangat Puas</p>
+                    </div>
+                    <div class="avatar-sm flex-shrink-0">
+                        <span class="avatar-title bg-soft-danger rounded fs-3">
+                            <i class="bx bx-star text-danger"></i>
+                        </span>
+                    </div>
+                </div>
+            </div><!-- end card body -->
+        </div><!-- end card -->
+      </div><!-- end col -->    
+    </div>
+    <div class="row">
+      <div class="col-xl-6">
         <div class="card card-height-100">
             <div class="card-header align-items-center d-flex">
                 <h4 class="card-title mb-0 flex-grow-1">Distribusi Kepuasan Pelanggan</h4>
                 <div class="flex-shrink-0">
-                    <div class="dropdown card-header-dropdown">
-                        <a class="text-reset dropdown-btn" href="#" data-bs-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">
-                            <span class="text-muted">Report<i class="mdi mdi-chevron-down ms-1"></i></span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end">
-                            <a class="dropdown-item" href="#">Download Report</a>
-                            <a class="dropdown-item" href="#">Export</a>
-                            <a class="dropdown-item" href="#">Import</a>
-                        </div>
-                    </div>
                 </div>
-            </div><!-- end card header -->
-    
+            </div>
             <div class="card-body">
-                <div id="kepuasan-pelanggan-chart"
+                <div id="kepuasan-pelanggan-chart" class="apex-charts"
                     data-colors='["--vz-primary", "--vz-success", "--vz-warning", "--vz-danger", "--vz-info"]'
                     class="apex-charts" dir="ltr">
                 </div>
@@ -157,7 +181,7 @@
           </div> 
       </div> 
 
-      <div class="col-xl-4">
+      <div class="col-xl-6">
         <div class="card card-height-100">
             <div class="card-header ">
                 <h4 class="card-title mb-0">Perbandingan Nilai CSAT Event</h4>
@@ -166,29 +190,201 @@
                 <canvas id="bar" class="chartjs-chart"></canvas>
             </div>
         </div>
-      </div> <!-- end col -->
+      </div>
 
-      <div class="col-xl-4">
+      <div class="col-xl-6">
         <div class="card card-height-100">
-            <div class="card-header">
-                <h4 class="card-title mb-0">Status Approval Partisipan</h4>
-            </div>
-            <div class="card-body d-flex justify-content-between align-items-center">
-                <div style="width: 50%;">
-                    <canvas id="approvalChart" style="max-height: 180px;"></canvas>
-                </div>
-                <div>
-                    <ul class="list-unstyled mb-0">
-                        <li><span class="badge bg-primary me-2" style="width:12px; height:12px; display:inline-block;"></span> Approved</li>
-                        <li><span class="badge bg-secondary me-2" style="width:12px; height:12px; display:inline-block;"></span> Pending</li>
-                        <li><span class="badge bg-dark me-2" style="width:12px; height:12px; display:inline-block;"></span> Rejected</li>
-                    </ul>
-                </div>
+          <div class="card-header">
+            <h4 class="card-title mb-0">Hasil Feedback Pelanggan</h4>
+          </div>
+          <div class="card-body text-center" style="padding-top: 20px;">
+            <!-- Tempat untuk DataTable -->
+            <table id="surveyTable" class="table table-striped table-bordered">
+              <thead style="background-color: #3f4f88;">
+                <tr>
+                  <th class="text-center align-middle text-white">Hal Disukai Dari Event</th>
+                  <th class="text-center align-middle text-white">Saran Dan Masukkan</th>
+                  <th class="text-center align-middle text-white">Tertarik Event Selanjutnya</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- DataTable akan mengisi baris di sini -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>      
+
+      <div class="col-xl-6">
+        <div class="card card-height-100">
+          <div class="card-header">
+            <h4 class="card-title mb-0">Status Approval Registrasi</h4>
+          </div>
+          <div class="card-body text-center" style="padding-top: 45px;">
+            <div id="participantStatusChart"></div>
+          </div>
+        </div>
+      </div>
+      
+    </div> <!-- end row -->
+    
+    
+    <!-- Modal -->
+  <div class="modal fade" id="participantsModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-soft-info p-3">
+          <h5 class="modal-title" id="participantsModalLabel">Daftar Registrtasi Partisipan</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <table id="participantsTable" class="table table-striped" style="width:100%">
+            <thead>
+              <tr>
+                <th class="text-center align-middle">NAME</th>
+                <th class="text-center align-middle">COMPANY</th>
+                <th class="text-center align-middle">EMAIL</th>
+                <th class="text-center align-middle">PHONE</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data akan diisi via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="kehadiranModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg"> <!-- Modal besar -->
+      <div class="modal-content">
+        <div class="modal-header bg-soft-info p-3">
+          <h5 class="modal-title" id="kehadiranModalLabel">Daftar Kehadiran</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <table id="kehadiranTable" class="table table-striped" style="width:100%">
+            <thead>
+              <tr>
+                <th class="text-center align-middle">NAME</th>
+                <th class="text-center align-middle">EMAIL</th>
+                <th class="text-center align-middle">ATTENDANCE TIME</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data akan diisi via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="RespondenModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg"> <!-- Modal besar -->
+      <div class="modal-content">
+        <div class="modal-header bg-soft-info p-3">
+          <h5 class="modal-title" id="RespondenModal">Daftar Responden</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <table id="RespondenTable" class="table table-striped" style="width:100%">
+            <thead>
+              <tr>
+                <th class="text-center align-middle">NAME</th>
+                <th class="text-center align-middle">COMPANY</th>
+                <th class="text-center align-middle">EMAIL</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data akan diisi via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="EventModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg"> <!-- Modal besar -->
+      <div class="modal-content">
+        <div class="modal-header bg-soft-info p-3">
+          <h5 class="modal-title" id="EventModal">Daftar Event</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <table id="EventTable" class="table table-striped" style="width:100%">
+            <thead>
+              <tr>
+                <th class="text-center align-middle">NAME</th>
+                <th class="text-center align-middle">LOCATION</th>
+                <th class="text-center align-middle">START DATE</th>
+                <th class="text-center align-middle">END DATE</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data akan diisi via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Statistik-->
+  <div class="modal fade" id="chartModal"  data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="chartModalLabel">Detail Statistik</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h4 id="modalTitle">Detail untuk: </h4>
+          <p id="modalDescription">Keterangan statistik</p>
+            <div class="card-body">
+              <div id="kepuasan-detail-chart" class="apex-charts"
+                  data-colors='["--vz-primary", "--vz-success", "--vz-warning", "--vz-danger", "--vz-info"]'
+                  class="apex-charts" dir="ltr">
+              </div>
             </div>
         </div>
       </div>
-    </div> <!-- end row -->
+    </div>
+  </div>
 
+  <!-- Modal -->
+<div class="modal fade" id="participantModal"  data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-soft-info p-3">
+        <h5 class="modal-title" id="participantModalLabel">Participant Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table id="participantDetailTable" class="table table-striped" style="width:100%">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- diisi dari JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.14/moment-timezone-with-data.min.js"></script>
 <%- contentFor('FooterJs') %>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="assets/libs/apexcharts/apexcharts.min.js"></script>
@@ -197,12 +393,17 @@
 <script type="text/javascript">
   var role = '<%-event_objectCookie.role%>';
   var token = '<%-event_objectCookie.token%>';
+  var data_dashboard;
 
   $(document).ready(async function () {
     if (role === "Admin") {
       $('body').show();
       await loadEventFilterOptionsDashboard();
       await loadDashboardData(); // pertama kali load semua
+      await loadSatisfactionDistribution(); // Panggil fungsi untuk load distribusi kepuasan pelanggan pada load pertama
+      getDataCSATAllEvent();
+      getDataSurveyResponse(0);
+      loadParticipantStatusChart();
     } else {
       window.location.href = "404";
     }
@@ -210,6 +411,9 @@
     // Ubah filter
     $('#eventFilterDashboard').on('change', function () {
       loadDashboardData(); // reload dashboard sesuai event
+      loadSatisfactionDistribution();
+      loadParticipantStatusChart();
+      getDataSurveyResponse(0);
     });
   });
 
@@ -245,144 +449,540 @@
         contentType: 'application/json',
         data: JSON.stringify({ event_id: eventId }),
       });
-      const data =res.data[0];
+      data_dashboard = res.details;
+      const data = res.data[0];
       // Misalnya kamu update angka dan chart:
       $('#jmlPartisipan').text(data.registrations);
       $('#jmlKehadiran').text(data.attendance);
       $('#jmlResponden').text(data.survey_count);
       $('#jmlEvent').text(data.event_data);
 
-      updateChart(res.chartData);
 
     } catch (err) {
       console.error("Gagal memuat data dashboard:", err);
     }
   }
 
-  // Contoh update chart
-  function updateChart(data) {
-    if (window.myChartInstance) {
-      window.myChartInstance.data.datasets[0].data = data;
-      window.myChartInstance.update();
-    }
-  }
-</script>
-
-<script>
-  var options = {
-      chart: {
-          type: 'donut',
-          height: 300
-      },
-      series: [45, 30, 15, 10], // Sangat Puas, Puas, Cukup, Tidak Puas
-      labels: ['Sangat Puas', 'Puas', 'Cukup', 'Tidak Puas'],
-      colors: ['#556ee6', '#34c38f', '#f1b44c', '#f46a6a'],
-      dataLabels: {
-          enabled: true,
-          formatter: function (val) {
-              return val.toFixed(1) + '%';
-          }
-      },
-      legend: {
-          position: 'bottom'
-      },
-      plotOptions: {
-          pie: {
-              donut: {
-                  size: '50%' // Semakin kecil, semakin tebal lingkarannya
-              }
-          }
-      }
-  };
-
-  var chart = new ApexCharts(document.querySelector("#kepuasan-pelanggan-chart"), options);
-  chart.render();
-</script>
-
-<script>
-  // Ambil warna dari CSS variable theme
-  function getChartColorsArray(chartId) {
-      var colors = document.getElementById(chartId).getAttribute("data-colors");
-      if (colors) {
-          colors = JSON.parse(colors.replace(/ /g, "").replace(/'/g, '"'));
-          return colors.map(function (value) {
-              if (value.indexOf("--") !== -1) {
-                  var cssVar = getComputedStyle(document.documentElement).getPropertyValue(value).trim();
-                  return cssVar || value;
-              }
-              return value;
+  async function loadSatisfactionDistribution() {
+      try {
+          const eventId = $('#eventFilterDashboard').val();
+          // Ambil data distribusi kepuasan dari server
+          const res = await $.ajax({
+              url: '/dashboard/getSurveyDistribution',
+              method: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify({ event_id: eventId }), // Kirimkan event_id dalam JSON
           });
-      } else {
-          console.warn('data-colors attribute not found on: ' + chartId);
-          return [];
-      }
-  }
 
-  var barColors = getChartColorsArray("bar");
-  var ctx = document.getElementById('bar').getContext('2d');
-  var barChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-          labels: ['Meetup', 'Jennifer APM Event'],
-          datasets: [{
-              label: 'CSAT',
-              data: [70, 95],
-              backgroundColor: ['#556ee6', '#34c38f']
-          }]
-      },
-      options: {
-          responsive: true,
-          scales: {
-              y: {
-                  beginAtZero: true,
-                  max: 100
+          const chartData = res.chartData;
+          const totalResponses = res.totalResponses;
+          $('#jmlCSAT').text(res.csat + "%");
+
+          console.log("Total Responses: ", totalResponses);
+
+          // Jika tidak ada data, tampilkan "No Data Available"
+          if (totalResponses === 0) {
+              console.log("No Data Available for chart.");
+              $('#kepuasan-pelanggan-chart').html('<h4 class="text-center">No Data Available</h4>');
+              // Hancurkan chart jika sudah ada
+              if (chart) {
+                  chart.destroy(); // Hancurkan chart yang ada
+                  chart = null; // Reset chart menjadi null
+                  console.log("Chart destroyed and set to null.");
               }
-          },
-          plugins: {
-              legend: {
-                  display: false
-              }
+              return;
           }
-      }
-  });
-</script>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const ctxApprov = document.getElementById('approvalChart').getContext('2d');
-    new Chart(ctxApprov, {
-      type: 'doughnut',
-      data: {
-        labels: ['Approved', 'Pending', 'Rejected'],
-        datasets: [{
-          data: [70, 20, 10],
-          backgroundColor: ['#4a77d4', '#a5b4fc', '#1e2a49'],
-          borderWidth: 0
-        }]
-      },
-      options: {
-        cutout: '70%',
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: function (context) {
-                return `${context.label}: ${context.raw}%`;
-              }
-            }
-          },
-          doughnutlabel: {
-            labels: [
-              {
-                text: '70%',
-                font: {
-                  size: '20'
+          // Pastikan data valid
+          if (!chartData || chartData.length !== 4) {
+              console.error("Data chart tidak valid:", chartData);
+              return;
+          }
+
+          // Set konfigurasi chart
+          const options = {
+              chart: {
+                  type: 'donut',
+                  height: 300,
+                  events: {
+                      dataPointSelection: function(event, chartContext, config) {
+                          const clickedIndex = config.dataPointIndex;
+                          const clickedLabel = config.w.globals.labels[clickedIndex];
+                          const clickedValue = config.w.config.series[clickedIndex];
+                          if (clickedLabel === "Tidak Puas") {
+                              openChartModal(res.tidakPuasResults, clickedLabel); // Tampilkan detail
+                              getDataSurveyResponse(1);
+                          }else if (clickedLabel === "Cukup") {
+                            openChartModal(res.cukupResults, clickedLabel); // Tampilkan detail
+                            getDataSurveyResponse(2);
+                          }else if (clickedLabel === "Puas") {
+                            openChartModal(res.cukupResults, clickedLabel); // Tampilkan detail
+                            getDataSurveyResponse(3);
+                          }else if (clickedLabel === "Sangat Puas") {
+                            openChartModal(res.cukupResults, clickedLabel); // Tampilkan detail
+                            getDataSurveyResponse(4);
+                          }
+                      }
+                  }
+              },
+              series: chartData, // Data distribusi kepuasan dalam bentuk persentase
+              labels: ['Sangat Puas', 'Puas', 'Cukup', 'Tidak Puas'],
+              colors: ['#556ee6', '#34c38f', '#f1b44c', '#f46a6a'],
+              dataLabels: {
+                  enabled: true,
+                  formatter: function (val) {
+                      return val.toFixed(2) + '%';
+                  }
+              },
+              tooltip: {
+                  y: {
+                      formatter: function (val) {
+                          return val.toFixed(2) + '%';
+                      }
+                  }
+              },
+              legend: {
+                  position: 'bottom'
+              },
+              plotOptions: {
+                  pie: {
+                      donut: {
+                          size: '50%'
+                      }
+                  }
+              },
+              noData: {
+                text: 'No Data Available', // Pesan yang muncul jika tidak ada data
+                align: 'center',           // Posisi teks (center, left, right)
+                verticalAlign: 'middle',   // Posisi vertikal (top, middle, bottom)
+                offsetX: 0,                // Offset horizontal
+                offsetY: 0,                // Offset vertical
+                style: {
+                  fontSize: '16px',         // Ukuran font
+                  fontWeight: 'bold',       // Tebal font
+                  color: '#888',            // Warna teks
                 }
               }
-            ]
+          };
+
+          // Jika chart belum ada, buat chart baru
+          if (!chart) {
+              chart = new ApexCharts(document.querySelector("#kepuasan-pelanggan-chart"), options);
+              chart.render();
+          } else {
+              // Jika chart sudah ada, update data
+              chart.updateSeries(chartData);
           }
+      } catch (err) {
+          console.error("Error loading satisfaction distribution:", err);
+      }
+  }
+  
+  // Fungsi untuk membuka modal dan menampilkan chart
+  function openChartModal(data, categoryLabel) {
+    // Mengambil elemen modal dan chart
+    const modal = new bootstrap.Modal(document.getElementById('chartModal'));
+    const chartElement = document.getElementById('kepuasan-detail-chart');
+    
+    // Judul Modal
+    document.getElementById('modalTitle').innerText = "Detail Statistik: " + categoryLabel;
+    document.getElementById('modalDescription').innerText = "Menampilkan statistik hasil survey dengan nilai " + categoryLabel;
+
+    // Ambil kategori (pertanyaan) dan nilai (jumlah Tidak Puas)
+    const categories = Object.keys(data);  // Nama pertanyaan
+    const values = Object.values(data);  // Jumlah tidak puas
+
+    const options = {
+        chart: {
+            type: 'bar',
+            height: 350
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '55%',
+                endingShape: 'rounded'
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        colors: ['#f46a6a'], // Warna bar chart
+        series: [{
+            name: 'Jumlah '+ categoryLabel,
+            data: values // Data untuk bar chart
+        }],
+        xaxis: {
+            categories: categories, // Pertanyaan sebagai label x-axis
+            title: {
+                text: 'Pertanyaan'
+            }
+        },
+        yaxis: {
+            title: {
+                text: 'Jumlah'
+            }
+        },
+        title: {
+            text: 'Statistik ' + categoryLabel,
+            align: 'center'
+        }
+    };
+
+    // Membuat chart baru menggunakan ApexCharts
+    const chart = new ApexCharts(chartElement, options);
+    chart.render();
+
+    // Menampilkan modal
+    modal.show();
+}
+
+  let participantsTable; // Global variable buat DataTable
+  let kehadiranTable; // Global variable buat DataTable
+  let RespondenTable; // Global variable buat DataTable
+  let EventTable; // Global variable buat DataTable
+
+  function openParticipantsModal() {
+    // 1. Buka Modal
+    var modal = new bootstrap.Modal(document.getElementById('participantsModal'));
+    modal.show();
+
+    // 2. Kalau DataTable belum dibuat, baru inisialisasi
+    if (!participantsTable) {
+      participantsTable = $('#participantsTable').DataTable({
+        data: data_dashboard.registrations,
+        columns: [
+          { data: 'name' },
+          { data: 'company_name' },
+          { data: 'email' },
+          { data: 'phone' },
+        ],
+        paging: true,
+        searching: true,
+        destroy: true // supaya kalau mau reset manual, bisa
+      });
+    } else {
+      // Kalau DataTable sudah ada, tinggal update datanya aja
+      participantsTable.clear();
+      participantsTable.rows.add(data_dashboard.registrations);
+      participantsTable.draw();
+    }
+  }
+
+  function openKehadiranModal() {
+    // 1. Buka Modal
+    var modal = new bootstrap.Modal(document.getElementById('kehadiranModal'));
+    modal.show();
+
+    // 2. Kalau DataTable belum dibuat, baru inisialisasi
+    if (!kehadiranTable) {
+      kehadiranTable = $('#kehadiranTable').DataTable({
+        data: data_dashboard.attendance,
+        columns: [
+          { data: 'name' },
+          { data: 'email' },
+          {
+            data: 'scanned_at',
+            render: function (data) {
+              return moment(data).format('MM/DD/YYYY HH:mm');
+            }
+          },
+        ],
+        paging: true,
+        searching: true,
+        destroy: true // supaya kalau mau reset manual, bisa
+      });
+    } else {
+      // Kalau DataTable sudah ada, tinggal update datanya aja
+      kehadiranTable.clear();
+      kehadiranTable.rows.add(data_dashboard.attendance);
+      kehadiranTable.draw();
+    }
+  }
+  
+  function openRespondenModal() {
+    // 1. Buka Modal
+    var modal = new bootstrap.Modal(document.getElementById('RespondenModal'));
+    modal.show();
+
+    // 2. Kalau DataTable belum dibuat, baru inisialisasi
+    if (!RespondenTable) {
+      RespondenTable = $('#RespondenTable').DataTable({
+        data: data_dashboard.surveys,
+        columns: [
+          { data: 'name' },
+          { data: 'company_name' },
+          { data: 'email' },
+        ],
+        paging: true,
+        searching: true,
+        destroy: true // supaya kalau mau reset manual, bisa
+      });
+    } else {
+      // Kalau DataTable sudah ada, tinggal update datanya aja
+      RespondenTable.clear();
+      RespondenTable.rows.add(data_dashboard.surveys);
+      RespondenTable.draw();
+    }
+  }
+
+  function openEventModal() {
+    // 1. Buka Modal
+    var modal = new bootstrap.Modal(document.getElementById('EventModal'));
+    modal.show();
+
+    // 2. Kalau DataTable belum dibuat, baru inisialisasi
+    if (!EventTable) {
+      EventTable = $('#EventTable').DataTable({
+        data: data_dashboard.events,
+        columns: [
+          { data: 'title' },
+          { data: 'location' },
+          {
+            data: 'start_date',
+            render: function (data) {
+              return moment(data).format('MM/DD/YYYY');
+            }
+          },
+          {
+            data: 'end_date',
+            render: function (data) {
+              return moment(data).format('MM/DD/YYYY');
+            }
+          },
+        ],
+        paging: true,
+        searching: true,
+        destroy: true // supaya kalau mau reset manual, bisa
+      });
+    } else {
+      // Kalau DataTable sudah ada, tinggal update datanya aja
+      EventTable.clear();
+      EventTable.rows.add(data_dashboard.events);
+      EventTable.draw();
+    }
+  }
+
+  function getDataCSATAllEvent(){
+    // Ambil data CSAT untuk semua event
+    fetch('/dashboard/getCSATForAllEvents')  // Sesuaikan URL dengan route yang mengembalikan data CSAT
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        const csatResults = data.csatResults;
+
+        // Ambil nama event dan nilai CSAT dari data
+        const eventNames = csatResults.map(result => `Event ${result.title}`);
+        const csatValues = csatResults.map(result => result.csat);
+
+        // Buat bar chart menggunakan Chart.js
+        const ctx = document.getElementById('bar').getContext('2d');
+        const barChart = new Chart(ctx, {
+          type: 'bar',  // Tipe chart: bar chart
+          data: {
+            labels: eventNames,  // Label untuk setiap event
+            datasets: [{
+              label: 'CSAT (%)',  // Label chart
+              data: csatValues,   // Data CSAT untuk setiap event
+              backgroundColor: '#34c38f',  // Warna bar
+              borderColor: '#28a745',      // Warna border bar
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'CSAT (%)'
+                }
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'Event'
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                display: false  // Sembunyikan legend
+              }
+            }
+          }
+        });
+      } else {
+        console.log("Error fetching CSAT data");
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+
+  }
+
+  var participantStatusChart = null; // variabel global
+  var allParticipants = [];    // simpan semua data participants
+  
+  async function loadParticipantStatusChart() {
+    try {
+      const eventId = $('#eventFilterDashboard').val();
+      const response = await fetch('/dashboard/getParticipantsStatus', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ event_id: eventId })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        const data = result.data;
+        allParticipants = result.participants; // ⬅️ Simpan semua data partisipan
+        const seriesData = [
+          {
+            x: 'Pending',
+            y: data.pending || 0
+          },
+          {
+            x: 'Approved',
+            y: data.approved || 0
+          },
+          {
+            x: 'Rejected',
+            y: data.rejected || 0
+          }
+        ];
+
+        if (participantStatusChart) {
+          // ✅ Kalau chart sudah ada, update data saja
+          participantStatusChart.updateSeries([{
+            data: seriesData
+          }]);
+        } else {
+          // ✅ Kalau chart belum ada, buat baru
+          var options = {
+            chart: {
+              type: 'bar',
+              height: 300,
+              events: {
+                dataPointSelection: function(event, chartContext, config) {
+                  const selectedStatus = config.w.config.series[0].data[config.dataPointIndex].x.toLowerCase();
+                  showParticipantsModal(selectedStatus);
+                }
+              }
+            },
+            plotOptions: {
+              bar: {
+                distributed: true,
+                horizontal: true,
+                barHeight: '60%',
+              }
+            },
+            colors: ['#f7b84b', '#34c38f', '#f46a6a'],
+            dataLabels: {
+              enabled: true
+            },
+            series: [{
+              data: seriesData
+            }],
+            xaxis: {
+              title: {
+                text: 'Jumlah Participants'
+              }
+            }
+          };
+          participantStatusChart = new ApexCharts(document.querySelector("#participantStatusChart"), options);
+          participantStatusChart.render();
         }
       }
+    } catch (error) {
+      console.error('Error loading participant status chart:', error);
+    }
+  }
+
+  function showParticipantsModal(status) {
+    // Filter peserta sesuai status yang diklik
+    const filteredParticipants = allParticipants.filter(p => p.status === status);
+  
+    // Clear DataTable lama
+    if ($.fn.DataTable.isDataTable('#participantDetailTable')) {
+      $('#participantDetailTable').DataTable().clear().destroy();
+    }
+  
+    // Isi tabel
+    $('#participantDetailTable tbody').empty();
+    filteredParticipants.forEach((participant, index) => {
+      $('#participantDetailTable tbody').append(`
+        <tr>
+          <td>${index + 1}</td>
+          <td>${participant.fullname}</td>
+          <td>${participant.email}</td>
+          <td>${participant.phone || '-'}</td>
+          <td>${participant.status}</td>
+        </tr>
+      `);
     });
+  
+    // Inisialisasi DataTable lagi
+    $('#participantDetailTable').DataTable();
+  
+    // Tampilkan modal
+    $('#participantModal').modal('show');
+  }
+
+  async function getDataSurveyResponse(label) {
+    const eventId = $('#eventFilterDashboard').val();
+
+    await $.ajax({
+        url: '/dashboard/getSurveyResponses',
+        method: "POST",
+        data: JSON.stringify({ event_id: eventId, label: label }),
+        contentType: 'application/json',
+        beforeSend: function () {
+            $("#preloader_xx").show();
+        },
+        complete: function () {
+            $('#preloader_xx').hide();
+        },
+        success: function (resp_data) {
+            var data = resp_data.data;
+
+            const table = $('#surveyTable').DataTable({
+                data: data,
+                columns: [
+                    { data: 'suka_dari_event'},
+                    { data: 'saran_event'},
+                    { data: 'tertarik_info_lanjutan'},
+                ],
+                dom: '<"row mb-2"' +
+                        '<"col-sm-6 d-flex align-items-center"l>' + // Show entries kiri atas
+                        '<"col-sm-6 d-flex justify-content-end"f>' + // Search kanan atas
+                     '>rt' +
+                     '<"row mt-2"' +
+                        '<"col-sm-6 d-flex align-items-center small"i>' + // Info kecil kiri bawah
+                        '<"col-sm-6 d-flex justify-content-end"p>' + // Pagination tengah bawah
+                     '>',
+                paging: true,
+                searching: true,
+                lengthChange: true,
+                pageLength: 5,
+                lengthMenu: [5, 10, 25, 50, 100],
+                bDestroy: true
+            });
+            $('#surveyTable').DataTable().columns.adjust();
+        },
+        error: function (request, status, error) {
+            console.log('code: ' + request.status + "\n" + 'message: ' + request.responseText + "\n" + 'error: ' + error);
+        }
+    });
+  }
+
+  $('#chartModal').on('hidden.bs.modal', function () {
+      $('#surveyTable').DataTable().columns.adjust();
   });
+
 </script>

@@ -59,7 +59,7 @@
       </div>
       <div class="card-body">
         <div class="table-responsive">
-          <table id="participantTable" class="table table-bordered dt-responsive nowrap table-striped text-center align-middle" style="width:100%">
+          <table id="participantTable" class="table table-bordered nowrap table-striped text-center align-middle" style="width:100%">
             <thead style="background-color: #3f4f88;" class="text-white">
               <tr>
                 <th class="text-center align-middle">NO</th>
@@ -94,6 +94,7 @@
   $(document).ready(function () {
     attendanceTable = $('#participantTable').DataTable({
       ajax: '/scan/getAttendanceList',
+      scrollX: true,
       columns: [
         {
           data: null,
