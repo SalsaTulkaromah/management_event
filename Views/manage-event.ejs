@@ -162,14 +162,30 @@
           { data: 'location' },
           {
             data: 'start_date',
-            render: function (data) {
-              return moment(data).format('MM/DD/YYYY HH:mm');
+            render: function (data, type, row) {
+              if (!data) return '-';
+              const date = new Date(data);
+              return date.toLocaleString('id-ID', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              });
             }
           },
           {
             data: 'end_date',
-            render: function (data) {
-              return moment(data).format('MM/DD/YYYY HH:mm');
+            render: function (data, type, row) {
+              if (!data) return '-';
+              const date = new Date(data);
+              return date.toLocaleString('id-ID', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              });
             }
           },
           { data: 'description' },
