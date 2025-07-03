@@ -16,21 +16,21 @@
       </div>
 
     <div class="row">
-      <!-- Card 1: Jumlah Partisipan -->
+      <!-- Card 1: Jumlah Registrasi -->
       <div class="col-xl-4">
         <!-- card -->
         <div class="card card-animate">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-grow-1 overflow-hidden">
-                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">
-                            Jumlah Registrasi
-                        </p>
+                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Jumlah Registrasi</p>
+                    </div>
+                    <div class="flex-shrink-0">
                     </div>
                 </div>
                 <div class="d-flex align-items-end justify-content-between mt-4">
                     <div>
-                        <h4 class="fs-22 fw-semibold ff-secondary mb-3">
+                        <h4 class="fs-22 fw-semibold ff-secondary mb-4">
                             <span class="counter-value" id="jmlPartisipan">0</span> Orang
                         </h4>
                         <a href="javascript:void(0);" class="text-decoration-underline" onclick="openParticipantsModal()">
@@ -151,7 +151,7 @@
                         <h4 class="fs-22 fw-semibold ff-secondary mb-4">
                             <span class="counter-value" id="jmlCSAT">0</span> 
                         </h4>
-                        <p class="text-muted mb-0">Sangat Puas</p>
+                        <p class="text-muted mb-0"id="csatSentimentText"></p>
                     </div>
                     <div class="avatar-sm flex-shrink-0">
                         <span class="avatar-title bg-soft-danger rounded fs-3">
@@ -483,7 +483,25 @@
 
           const chartData = res.chartData;
           const totalResponses = res.totalResponses;
+          const csatScore = res.csat; // Ambil nilai CSAT
           $('#jmlCSAT').text(res.csat + "%");
+
+
+        // Logika untuk menentukan sentimen CSAT
+        let sentimentText = "";
+         if (csatScore >= 85) {
+            sentimentText = "Sangat Puas";
+        } else if (csatScore >= 70) {
+            sentimentText = "Puas";
+        } else if (csatScore >= 50) {
+            sentimentText = "Cukup";
+        } else if (csatScore >= 30) {
+            sentimentText = "Tidak Puas";
+        } else { // CSAT < 30
+            sentimentText = "Sangat Tidak Puas";
+        }
+        // Update teks sentimen CSAT
+        $('#csatSentimentText').text(sentimentText);
 
           console.log("Total Responses: ", totalResponses);
 
@@ -501,11 +519,11 @@
           }
 
           // Pastikan data valid
-          if (!chartData || chartData.length !== 4) {
+          if (!chartData || chartData.length !== 5) {
               console.error("Data chart tidak valid:", chartData);
               return;
           }
-
+          console.log("series :",chartData)
           // Set konfigurasi chart
           const options = {
               chart: {
@@ -516,25 +534,29 @@
                           const clickedIndex = config.dataPointIndex;
                           const clickedLabel = config.w.globals.labels[clickedIndex];
                           const clickedValue = config.w.config.series[clickedIndex];
+
                           if (clickedLabel === "Sangat Tidak Puas") {
-                              openChartModal(res.tidakPuasResults, clickedLabel); // Tampilkan detail
+                              openChartModal(res.sangatTidakPuasResults, clickedLabel); // Tampilkan detail
                               getDataSurveyResponse(1);
+                          }else if (clickedLabel === "Tidak Puas") {
+                            openChartModal(res.tidakPuasResults, clickedLabel); // Tampilkan detail
+                            getDataSurveyResponse(2);
                           }else if (clickedLabel === "Cukup") {
                             openChartModal(res.cukupResults, clickedLabel); // Tampilkan detail
-                            getDataSurveyResponse(2);
-                          }else if (clickedLabel === "Puas") {
-                            openChartModal(res.cukupResults, clickedLabel); // Tampilkan detail
                             getDataSurveyResponse(3);
-                          }else if (clickedLabel === "Sangat Puas") {
-                            openChartModal(res.cukupResults, clickedLabel); // Tampilkan detail
+                          }else if (clickedLabel === "Puas") {
+                            openChartModal(res.puasResults, clickedLabel); // Tampilkan detail
                             getDataSurveyResponse(4);
+                          }else if (clickedLabel === "Sangat Puas") {
+                            openChartModal(res.sangatPuasResults, clickedLabel); // Tampilkan detail
+                            getDataSurveyResponse(5);
                           }
                       }
                   }
               },
               series: chartData, // Data distribusi kepuasan dalam bentuk persentase
-              labels: ['Sangat Puas', 'Puas', 'Cukup', 'Sangat Tidak Puas'],
-              colors: ['#556ee6', '#34c38f', '#f1b44c', '#f46a6a'],
+              labels: ['Sangat Puas', 'Puas', 'Cukup', 'Tidak Puas', 'Sangat Tidak Puas'],
+              colors: ['#34c38f', '#556ee6', '#f1b44c', '#dc3545', '#800000'],
               dataLabels: {
                   enabled: true,
                   formatter: function (val) {
@@ -612,7 +634,7 @@
             }
         },
         dataLabels: {
-            enabled: false
+            enabled: true
         },
         colors: ['#f46a6a'], // Warna bar chart
         series: [{
@@ -633,7 +655,21 @@
         title: {
             text: 'Statistik ' + categoryLabel,
             align: 'center'
-        }
+        },
+      // --- Bagian yang Diubah: Custom Tooltip ---
+      tooltip: {
+          custom: function({ series, seriesIndex, dataPointIndex, w }) {
+              const category = w.globals.labels[dataPointIndex]; // Label kategori (pertanyaan)
+              const value = series[seriesIndex][dataPointIndex]; // Nilai data (jumlah)
+              const seriesName = w.config.series[seriesIndex].name; // Nama series (misal: "Jumlah Tidak Puas")
+
+              // Mengubah baris ini untuk menambahkan " Responden"
+              return '<div class="apexcharts-tooltip-box" style="padding: 10px;">' +
+                    `  <div><strong>${category.replace("_"," ")}</strong></div>` +
+                    `  <div>${seriesName}: <strong>${value} Responden</strong></div>` + // Penambahan di sini
+                    '</div>';
+          }
+      }
     };
 
     // Membuat chart baru menggunakan ApexCharts
@@ -1031,7 +1067,7 @@
   }
 
   $('#chartModal').on('hidden.bs.modal', function () {
-  $('#surveyTable').DataTable().columns.adjust();
+    $('#surveyTable').DataTable().columns.adjust();
   });
 
 </script>

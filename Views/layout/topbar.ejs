@@ -2,7 +2,6 @@
     <div class="layout-width">
         <div class="navbar-header">
             <div class="d-flex">
-                <!-- LOGO -->
                 <div class="navbar-brand-box horizontal-logo">
                     <a href="index" class="logo logo-dark">
                         <span class="logo-sm">
@@ -83,10 +82,36 @@
                         </span>
                     </button>
                     <div class="dropdown-menu dropdown-menu-end">
-                        <!-- item-->
                         <h6 class="dropdown-header">Welcome <%-event_objectCookie.email%></h6>
-                        <a class="dropdown-item" href="/logout"><i
-                                class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span
-                                class="align-middle" data-key="t-logout">Logout</span></a>
+                        <a class="dropdown-item" href="javascript:void(0);" onclick="confirmLogoutSweetAlert();">
+                            <i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>
+                            <span class="align-middle" data-key="t-logout">Logout</span>
+                        </a>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </header>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function confirmLogoutSweetAlert() {
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: "Anda akan keluar dari sesi ini.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6', // Warna biru untuk tombol "Ya"
+            cancelButtonColor: '#d33',   // Warna merah untuk tombol "Batal"
+            confirmButtonText: 'Ya, keluar!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Jika pengguna mengklik "Ya, keluar!", arahkan ke URL logout
+                window.location.href = "/logout";
+            }
+        });
+    }
+</script>

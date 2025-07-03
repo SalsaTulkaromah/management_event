@@ -68,107 +68,113 @@ exports.getEventStats = async function (req, res) {
 
 // Mengambil distribusi kepuasan dari survey
 exports.getSurveyDistribution = async (req, res) => {
-  const { event_id } = req.body;
+    const { event_id } = req.body;
 
-  try {
-    const result = await db.query(`
-      SELECT 
-              materi_kelengkapan, materi_kesesuaian, materi_wawasan,
-              penyampaian_jelas, penyampaian_diskusi,
-              pemahaman_fitur, pemahaman_cara_kerja, pemahaman_demo,
-              rekomendasi_penggunaan, relevansi_produk, kepuasan_total
-          FROM tbl_survey a
-          join tbl_participants b on (a.participant_id = b.id)
-          WHERE ($1::int = 0 OR b.event_id = $1::int)
-    `, [event_id]);
+    try {
+        const result = await db.query(`
+            SELECT 
+                materi_kelengkapan, materi_kesesuaian, materi_wawasan,
+                penyampaian_jelas, penyampaian_diskusi,
+                pemahaman_fitur, pemahaman_cara_kerja, pemahaman_demo,
+                rekomendasi_penggunaan, relevansi_produk, kepuasan_total
+            FROM tbl_survey a
+            JOIN tbl_participants b ON (a.participant_id = b.id)
+            WHERE ($1::int = 0 OR b.event_id = $1::int)
+        `, [event_id]);
 
-      // Hitung distribusi untuk setiap kategori
-      const satisfactionDistribution = {
-          sangatPuas: 0,
-          puas: 0,
-          cukup: 0,
-          tidakPuas: 0
-      };
-      // Array untuk menyimpan hasil pertanyaan yang "Tidak Puas"
-      const tidakPuasResults = {};
-      const cukupResults = {};
-      const puasResults = {};
-      const sangatPuasResults = {};
-      result.rows.forEach(row => {
-        // Cek semua kolom di dalam row
-        for (let key in row) {
-          if (typeof row[key] === 'number') { // Pastikan value-nya angka dulu
-            if (row[key] >= 4) {
-              satisfactionDistribution.sangatPuas += 1;
+        // Hitung distribusi untuk setiap kategori
+        const satisfactionDistribution = {
+            sangatPuas: 0,
+            puas: 0,
+            cukup: 0,
+            tidakPuas: 0,
+            sangatTidakPuas: 0 // Tambahkan kategori ini
+        };
+        // Array untuk menyimpan hasil pertanyaan yang "Tidak Puas"
+        const tidakPuasResults = {};
+        const cukupResults = {};
+        const puasResults = {};
+        const sangatPuasResults = {};
+        const sangatTidakPuasResults = {}; // Tambahkan ini
 
-              if (!sangatPuasResults[key]) {
-                sangatPuasResults[key] = 0;
-              }
-              sangatPuasResults[key] += 1;
-            } else if (row[key] === 3) {
-              satisfactionDistribution.puas += 1;
-
-              if (!puasResults[key]) {
-                puasResults[key] = 0;
-              }
-              puasResults[key] += 1;
-            } else if (row[key] === 2) {
-              satisfactionDistribution.cukup += 1;
-
-              if (!cukupResults[key]) {
-                cukupResults[key] = 0;
-              }
-              cukupResults[key] += 1;
-            } else if (row[key] <= 1) {
-              satisfactionDistribution.tidakPuas += 1;
-              // Agregasi jumlah Tidak Puas per pertanyaan
-              if (!tidakPuasResults[key]) {
-                tidakPuasResults[key] = 0;
-              }
-              tidakPuasResults[key] += 1;
+        result.rows.forEach(row => {
+            // Cek semua kolom di dalam row
+            for (let key in row) {
+                if (typeof row[key] === 'number') { // Pastikan value-nya angka dulu
+                    if (row[key] >= 5) { // Asumsi 4 dan 5 adalah "Sangat Puas" (atau 5 saja jika Anda ingin membedakan 4 sebagai "Puas")
+                        satisfactionDistribution.sangatPuas += 1;
+                        if (!sangatPuasResults[key]) {
+                            sangatPuasResults[key] = 0;
+                        }
+                        sangatPuasResults[key] += 1;
+                    } else if (row[key] === 4) {
+                        satisfactionDistribution.puas += 1;
+                        if (!puasResults[key]) {
+                            puasResults[key] = 0;
+                        }
+                        puasResults[key] += 1;
+                    } else if (row[key] === 3) {
+                        satisfactionDistribution.cukup += 1;
+                        if (!cukupResults[key]) {
+                            cukupResults[key] = 0;
+                        }
+                        cukupResults[key] += 1;
+                    } else if (row[key] === 2) { 
+                        satisfactionDistribution.tidakPuas += 1;
+                        if (!tidakPuasResults[key]) {
+                            tidakPuasResults[key] = 0;
+                        }
+                        tidakPuasResults[key] += 1;
+                    } else if (row[key] === 1) { 
+                        satisfactionDistribution.sangatTidakPuas += 1;
+                        if (!sangatTidakPuasResults[key]) {
+                            sangatTidakPuasResults[key] = 0;
+                        }
+                        sangatTidakPuasResults[key] += 1;
+                    }
+                }
             }
-          }
-        }
-      });
-       
+        });
 
-      // 1. Hitung total jawaban
-      const total = satisfactionDistribution.sangatPuas +
-                    satisfactionDistribution.puas +
-                    satisfactionDistribution.cukup +
-                    satisfactionDistribution.tidakPuas;
+        // 1. Hitung total jawaban dari semua kategori
+        const total = satisfactionDistribution.sangatPuas +
+                      satisfactionDistribution.puas +
+                      satisfactionDistribution.cukup +
+                      satisfactionDistribution.tidakPuas +
+                      satisfactionDistribution.sangatTidakPuas;
 
-      // Menghitung persentase distribusi
-      const totalResponses = result.rows.length;
-      const chartData = [
-          (satisfactionDistribution.sangatPuas / total) * 100,
-          (satisfactionDistribution.puas / total) * 100,
-          (satisfactionDistribution.cukup / total) * 100,
-          (satisfactionDistribution.tidakPuas / total) * 100
-      ]
+        // Menghitung persentase distribusi (sesuai urutan label di EJS: Sangat Puas, Puas, Cukup, Tidak Puas, Sangat Tidak Puas)
+        const chartData = [
+            (satisfactionDistribution.sangatPuas / total) * 100,
+            (satisfactionDistribution.puas / total) * 100,
+            (satisfactionDistribution.cukup / total) * 100,
+            (satisfactionDistribution.tidakPuas / total) * 100,
+            (satisfactionDistribution.sangatTidakPuas / total) * 100
+        ];
 
-      // Total puas = sangat puas + puas
-      const totalPuas = satisfactionDistribution.sangatPuas + satisfactionDistribution.puas;
-      
-      // Hitung CSAT
-      const csat = (totalPuas / total) * 100;
+        // Total puas = sangat puas + puas
+        const totalPuas = satisfactionDistribution.sangatPuas + satisfactionDistribution.puas;
+        
+        // Hitung CSAT
+        const csat = (totalPuas / total) * 100;
 
-      res.status(200).json({
-          success: true,
-          chartData: chartData,
-          csat: csat.toFixed(2),
-          totalResponses: totalResponses,
-          totalPuas:totalPuas,
-          total:total,
-          tidakPuasResults: tidakPuasResults ,
-          cukupResults: cukupResults,
-          puasResults: puasResults,
-          sangatPuasResults: sangatPuasResults 
-      });
-  } catch (err) {
-      console.error("Error fetching survey distribution:", err);
-      res.status(500).send("Internal Server Error");
-  }
+        res.status(200).json({
+            success: true,
+            chartData: chartData,
+            csat: csat.toFixed(2),
+            totalResponses: result.rows.length, // Total baris dari query
+            totalPuas: totalPuas,
+            total: total,
+            tidakPuasResults: tidakPuasResults,
+            cukupResults: cukupResults,
+            puasResults: puasResults,
+            sangatPuasResults: sangatPuasResults,
+            sangatTidakPuasResults: sangatTidakPuasResults // Kirimkan ini juga
+        });
+    } catch (err) {
+        console.error("Error fetching survey distribution:", err);
+        res.status(500).send("Internal Server Error");
+    }
 };
 
 exports.getCSATForAllEvents = async (req, res) => {
@@ -203,6 +209,7 @@ exports.getCSATForAllEvents = async (req, res) => {
           puas: 0,
           cukup: 0,
           tidakPuas: 0,
+          sangatTidakPuas: 0,
           totalResponses: 0
         };
       }
@@ -210,15 +217,16 @@ exports.getCSATForAllEvents = async (req, res) => {
       // Hitung distribusi kepuasan untuk tiap event
       for (let key in row) {
         if (typeof row[key] === 'number' && key !== 'event_id') {
-          // Jika nilai >= 4, sangat puas
-          if (row[key] >= 4) {
+          if (row[key] >= 5) {
             eventCSAT[eventId].sangatPuas += 1;
-          } else if (row[key] === 3) { // Jika nilai = 3, puas
+          } else if (row[key] === 4) { // Jika nilai = 3, puas
             eventCSAT[eventId].puas += 1;
-          } else if (row[key] === 2) { // Jika nilai = 2, cukup
+          } else if (row[key] === 3) { // Jika nilai = 2, cukup
             eventCSAT[eventId].cukup += 1;
-          } else if (row[key] <= 1) { // Jika nilai <= 1, tidak puas
+          } else if (row[key] <= 2) { // Jika nilai <= 1, tidak puas
             eventCSAT[eventId].tidakPuas += 1;
+          } else if (row[key] <= 1) { // Jika nilai <= 1, tidak puas
+            eventCSAT[eventId].sangatTidakPuas += 1;
           }
         }
       }
@@ -232,7 +240,7 @@ exports.getCSATForAllEvents = async (req, res) => {
     // Menghitung CSAT untuk setiap event
     for (let eventId in eventCSAT) {
       const event = eventCSAT[eventId];
-      const total = event.sangatPuas + event.puas + event.cukup + event.tidakPuas;
+      const total = event.sangatPuas + event.puas + event.cukup + event.tidakPuas + event.sangatTidakPuas;
       const totalPuas = event.sangatPuas + event.puas;
       const csat = total === 0 ? 0 : (totalPuas / total) * 100;
 
@@ -243,6 +251,7 @@ exports.getCSATForAllEvents = async (req, res) => {
         puas: event.puas,
         cukup: event.cukup,
         tidakPuas: event.tidakPuas,
+        sangatTidakPuas: event.sangatTidakPuas,
         csat: csat.toFixed(2),
         totalResponses: event.totalResponses,
         total:total
