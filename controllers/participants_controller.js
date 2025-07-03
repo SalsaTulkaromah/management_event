@@ -74,7 +74,7 @@ exports.getParticipants = async function (req, res) {
 
     const mailOptions = {
       from: `"PT. Sindigilive Teknologi Kreatif" <${process.env.GMAIL_USER}>`,
-      to: participant.email,//participant.email,
+      to: "anggisaskia01@gmail.com",//participant.email,
       subject: 'Konfirmasi Persetujuan Pendaftaran Anda',
       html: `
         <p>Yth. <b>${participant.name}</b>,</p>
@@ -115,65 +115,86 @@ exports.getParticipants = async function (req, res) {
   };
   
   // POST Reject participant
-  exports.rejectParticipant = async function (req, res) {
-    const participantId = req.params.id;
-  
-    const client = await db.connect();
-  
-    try {
-      await client.query('BEGIN');
-  
-      const result = await client.query(
-        `UPDATE tbl_participants SET status = 'rejected' WHERE id = $1 RETURNING *`,
-        [participantId]
-      );
-  
-      if (result.rowCount === 0) {
-        await client.query('ROLLBACK');
-        return res.status(404).json({ message: "Peserta tidak ditemukan." });
+exports.rejectParticipant = async function (req, res) {
+  const participantId = req.params.id;
+  const { reason } = req.body; // Ambil alasan dari body request
+
+  if (!reason || reason.trim() === '') {
+    return res.status(400).json({ error: "Alasan penolakan tidak boleh kosong." });
+  }
+
+  const client = await db.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    // Update status ke 'rejected' DAN simpan alasan penolakan
+    const result = await client.query(
+      `UPDATE tbl_participants SET status = 'rejected', reject_reason = $1 WHERE id = $2 RETURNING *`,
+      [reason, participantId]
+    );
+
+    if (result.rowCount === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ message: "Peserta tidak ditemukan." });
+    }
+
+    const participant = result.rows[0];
+    
+    // Ambil event_name dari tbl_events untuk email
+    const eventResult = await client.query(
+      `SELECT title FROM tbl_events WHERE id = $1`,
+      [participant.event_id]
+    );
+
+    if (eventResult.rowCount === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ message: "Event tidak ditemukan." });
+    }
+    const eventTitle = eventResult.rows[0].title;
+    console.log(participant);
+    console.log(eventTitle);
+
+    // Konfigurasi transporter email
+    const transporter = nodemailer.createTransport({
+      port: 587,
+      host: 'smtp.gmail.com',
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASS
       }
-  
-      const participant = result.rows[0];
-  
-      // Konfigurasi transporter email
-      const transporter = nodemailer.createTransport({
-        port: 587,
-        host: 'smtp.gmail.com',
-        auth: {
-          user: process.env.GMAIL_USER,
-          pass: process.env.GMAIL_PASS
-        }
-      });
-      
-      const mailOptions = {
-        from: `"PT. Sindigilive Teknologi Kreatif" <${process.env.GMAIL_USER}>`,
-        to: participant.email,//participant.email,
-        subject: 'Informasi Pendaftaran Acara Tech Meetup 2025',
-        html: `
+    });
+    await transporter.verify();
+
+    const mailOptions = {
+      from: `"PT. Sindigilive Teknologi Kreatif" <${process.env.GMAIL_USER}>`,
+      to: "anggisaskia01@gmail.com",//participant.email,
+      subject: `Informasi Pendaftaran Acara ${eventTitle}`, // Subjek lebih dinamis
+      html: `
         <p>Yth. <b>${participant.name}</b>,</p>
-        <p>Terima kasih telah mendaftar untuk mengikuti acara <strong>Tech Meetup 2025</strong>.</p>
+        <p>Terima kasih telah mendaftar untuk mengikuti acara <strong>${eventTitle}</strong>.</p>
         <p>Dengan hormat, kami sampaikan bahwa setelah melalui proses verifikasi,</p>
         <p><strong>pendaftaran Anda belum dapat kami setujui</strong> untuk saat ini.</p>
-        <p>Kami sangat menghargai minat dan partisipasi Anda, dan kami berharap dapat bertemu dengan Anda di kesempatan lainnya.</p>
+        <p>Alasan penolakan: <strong>${reason}</strong></p> <p>Kami sangat menghargai minat dan partisipasi Anda, dan kami berharap dapat bertemu dengan Anda di kesempatan lainnya.</p>
         <br>
         <p>Hormat kami,</p>
-        <p><strong>Panitia Tech Meetup 2025</strong><br>
+        <p><strong>Panitia ${eventTitle}</strong><br>
         PT. Sindigilive Teknologi Kreatif</p>
         `
-      };
-  
-      await transporter.sendMail(mailOptions);
-      await client.query('COMMIT');
-  
-      res.status(200).json({ message: "Peserta berhasil ditolak dan email dikirim." });
-    } catch (error) {
-      await client.query('ROLLBACK');
-      console.error("Error rejecting participant:", error);
-      res.status(500).json({ error: "Gagal menolak peserta atau mengirim email." });
-    } finally {
-      client.release();
-    }
-  };
+    };
+
+    await transporter.sendMail(mailOptions);
+    await client.query('COMMIT');
+
+    res.status(200).json({ message: "Peserta berhasil ditolak dan email dikirim." });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error("Error rejecting participant:", error);
+    res.status(500).json({ error: "Gagal menolak peserta atau mengirim email." });
+  } finally {
+    client.release();
+  }
+};
 
 // Ambil semua peserta
 exports.getParticipants = async function (req, res) {
@@ -205,78 +226,5 @@ exports.getParticipants = async function (req, res) {
   } catch (error) {
     console.error("Error fetching participants:", error);
     res.status(500).json({ error: "Terjadi kesalahan saat mengambil data peserta." });
-  }
-};
-
-// Tambah peserta baru
-exports.insertParticipant = async function (req, res) {
-  const { name, company_name, email, phone} = req.body;
-
-  try {
-    const result = await db.query(`
-      INSERT INTO tbl_participants (name, company_name, email, phone)
-      VALUES ($1, $2, $3, $4)
-      RETURNING *
-    `, [name, company_name, email, phone]);
-
-    res.status(201).json({ 
-      message: "Peserta berhasil ditambahkan.",
-      participant: result.rows[0] 
-    });
-  } catch (error) {
-    console.error("Error inserting participant:", error);
-    res.status(500).json({ error: "Terjadi kesalahan saat menambahkan peserta." });
-  }
-};
-
-// Update peserta
-exports.updateParticipant = async function (req, res) {
-  const id = req.params.id;
-  const { name, company_name, email} = req.body;
-
-  try {
-    const result = await db.query(`
-      UPDATE tbl_participants
-      SET name = $1,
-          company_name = $2,
-          email = $3,
-          phone = $4,
-      WHERE id = $5
-      RETURNING *
-    `, [name, company_name, email, phone, id]);
-
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Peserta tidak ditemukan." });
-    }
-
-    res.status(200).json({ 
-      message: "Peserta berhasil diperbarui.",
-      participant: result.rows[0] 
-    });
-  } catch (error) {
-    console.error("Error updating participant:", error);
-    res.status(500).json({ error: "Terjadi kesalahan saat memperbarui peserta." });
-  }
-};
-
-// Hapus peserta
-exports.deleteParticipant = async function (req, res) {
-  const id = req.params.id;
-
-  try {
-    const result = await db.query(`
-      DELETE FROM tbl_participants
-      WHERE id = $1
-      RETURNING *
-    `, [id]);
-
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Peserta tidak ditemukan." });
-    }
-
-    res.status(200).json({ message: "Peserta berhasil dihapus." });
-  } catch (error) {
-    console.error("Error deleting participant:", error);
-    res.status(500).json({ error: "Terjadi kesalahan saat menghapus peserta." });
   }
 };

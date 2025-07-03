@@ -179,7 +179,7 @@
           <div class="form-title">Pertanyaan Tambahan</div>
           <textarea name="suka_dari_event" class="form-control mb-2" placeholder="Hal apa yang paling Anda sukai dari event ini?"></textarea>
           <textarea name="saran_event" class="form-control mb-2" placeholder="Apakah ada saran atau masukan agar event berikutnya lebih baik?"></textarea>
-          <textarea name="tertarik_info_lanjutan" class="form-control mb-3" placeholder="Apakah Anda tertarik untuk menerima info lanjutan atau demo lebih lanjut terkait APM Jennifer?"></textarea>
+          <textarea name="tertarik_info_lanjutan" class="form-control mb-3" placeholder="Apakah Anda tertarik untuk menerima info lanjutan atau demo lebih lanjut terkait materinya?"></textarea>
           <div class="d-flex justify-content-between">
             <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Back</button>
             <button type="submit" class="btn btn-success">Kirim Survei</button>
@@ -308,15 +308,15 @@
     // Daftar pertanyaan rating
     const pertanyaan = [
         ["materi_kelengkapan", "1. Seberapa puas Anda terhadap kelengkapan dan kejelasan materi yang disampaikan selama event?"],
-        ["materi_kesesuaian", "2. Seberapa sesuai materi yang disampaikan dengan kebutuhan Anda di bidang monitoring aplikasi?"],
+        ["materi_kesesuaian", "2. Seberapa sesuai materi yang disampaikan dengan kebutuhan Anda?"],
         ["materi_wawasan", "3. Apakah Anda merasa mendapatkan wawasan atau pengetahuan baru dari materi yang disampaikan?"],
-        ["penyampaian_jelas", "4. Seberapa puas Anda dengan cara penyampaian narasumber dalam menjelaskan materi APM Jennifer?"],
+        ["penyampaian_jelas", "4. Seberapa puas Anda dengan cara penyampaian narasumber dalam menjelaskan materi?"],
         ["penyampaian_diskusi", "5. Seberapa baik narasumber menjawab pertanyaan atau diskusi selama sesi berlangsung?"],
-        ["pemahaman_fitur", "6. Seberapa jelas penjelasan mengenai fitur-fitur utama dari APM Jennifer?:"],
-        ["pemahaman_cara_kerja", "7. Seberapa mudah Anda memahami cara kerja APM Jennifer berdasarkan penjelasan dalam event?"],
-        ["pemahaman_demo", "8. Seberapa baik studi kasus atau demo produk membantu Anda memahami manfaat APM Jennifer?"],
-        ["rekomendasi_penggunaan", "9. Seberapa besar kemungkinan Anda akan merekomendasikan APM Jennifer untuk digunakan di perusahaan Anda?"],
-        ["relevansi_produk", "10. Seberapa relevan produk APM Jennifer untuk kebutuhan pemantauan performa aplikasi yang Anda kelola?"],
+        ["pemahaman_fitur", "6. Seberapa jelas penjelasan mengenai fitur-fitur utama dari materi yang disampaikan?:"],
+        ["pemahaman_cara_kerja", "7. Seberapa mudah Anda memahami cara kerja materi yang diberikan berdasarkan penjelasan dalam event?"],
+        ["pemahaman_demo", "8. Seberapa baik studi kasus atau demo materi dapat membantu Anda dalam memahaminya?"],
+        ["rekomendasi_penggunaan", "9. Seberapa besar kemungkinan Anda akan merekomendasikan produk untuk digunakan di perusahaan Anda?"],
+        ["relevansi_produk", "10. Seberapa relevan produk yang kami tawarkan untuk kebutuhan Anda?"],
         ["kepuasan_total", "11. Secara keseluruhan, seberapa puas Anda terhadap penyelenggaraan event ini?"]
     ];
 
@@ -342,8 +342,8 @@
         if (!suka || !saran || !tertarik) {
             Swal.fire({
                 icon: 'warning',
-                title: 'Harap lengkapi semua pertanyaan tambahan',
-                text: 'Semua kolom di Step 3 harus diisi sebelum mengirim survei.'
+                title: 'Harap lengkapi semua pertanyaan',
+                text: 'Semua kolom pertanyaan harus diisi sebelum mengirim survei.'
             });
             return;
         }

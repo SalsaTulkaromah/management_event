@@ -37,6 +37,30 @@
   </div>
 </div>
 
+<div class="modal fade" id="rejectReasonModal" tabindex="-1" aria-labelledby="rejectReasonModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="rejectReasonModalLabel">Alasan Penolakan Participants</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="rejectReasonForm">
+          <div class="mb-3">
+            <label for="reasonInput" class="form-label">Masukkan alasan penolakan:</label>
+            <textarea class="form-control" id="reasonInput" rows="3" required></textarea>
+          </div>
+          <input type="hidden" id="participantIdToReject">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-danger" id="submitRejectReason">Tolak Peserta</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <%- contentFor('FooterJs') %>
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
@@ -55,7 +79,7 @@
 <script>
   var role = '<%-event_objectCookie.role%>';
   var token = '<%-event_objectCookie.token%>';
-
+  let tableParticipants;
   $(document).ready(function () {
     if (role == "Admin"){
       $('body').show(); // Tampilkan konten jika pengguna adalah admin
@@ -103,11 +127,11 @@
               url: `/participants/approve/${participantId}`,
               method: 'POST',
               success: function (res) {
-                Swal.fire('Approved!', res.message || 'Peserta disetujui.', 'success');
+                Swal.fire('Approved!', res.message || 'Email berhasil dikirim ulang.', 'success');
                 table.ajax.reload();
               },
               error: function () {
-                Swal.fire('Error', 'Gagal memproses permintaan.', 'error');
+                Swal.fire('Error', 'Gagal mengirim email.', 'error');
               }
             });
           }
@@ -117,34 +141,46 @@
       // Reject
       $('#participantsTable').on('click', '.btn-reject', function () {
         const participantId = $(this).data('id');
+        $('#participantIdToReject').val(participantId); // Simpan ID peserta
+        $('#reasonInput').val(''); // Bersihkan input alasan sebelumnya
+        $('#rejectReasonModal').modal('show'); // Tampilkan modal
+      });
+
+      // Handle submit dari modal reject
+      $('#submitRejectReason').on('click', function () {
+        const participantId = $('#participantIdToReject').val();
+        const reason = $('#reasonInput').val().trim(); // Ambil alasan dan hapus spasi kosong di awal/akhir
+
+        if (!reason) {
+          Swal.fire('Peringatan', 'Alasan penolakan tidak boleh kosong.', 'warning');
+          return;
+        }
+
+        $('#rejectReasonModal').modal('hide'); // Sembunyikan modal
         Swal.fire({
-          title: 'Yakin ingin reject peserta ini?',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonText: 'Ya, Reject',
-          cancelButtonText: 'Batal'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            $.ajax({
-              url: `/participants/reject/${participantId}`,
-              method: 'POST',
-              success: function (res) {
-                Swal.fire('Ditolak!', res.message || 'Peserta ditolak.', 'info');
-                table.ajax.reload();
-              },
-              error: function () {
-                Swal.fire('Error', 'Gagal memproses permintaan.', 'error');
-              }
-            });
+          title: 'Memproses...',
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading()
+        });
+
+        $.ajax({
+          url: `/participants/reject/${participantId}`,
+          method: 'POST',
+          data: { reason: reason }, // Kirim alasan sebagai data ke backend
+          success: function (res) {
+            Swal.fire('Ditolak!', res.message || 'Peserta ditolak.', 'info');
+            table.ajax.reload();
+          },
+          error: function (xhr, status, error) {
+            Swal.fire('Error', xhr.responseJSON ? xhr.responseJSON.error : 'Gagal memproses permintaan.', 'error');
           }
         });
       });
-    
+
     }else{
-        window.location.href = "404";
+      // Redirect jika peran bukan Admin
+      window.location.href = "404";
     }
-    
   });
 
   async function getDataAttendence() {
@@ -165,7 +201,7 @@
       },
       success: function (resp_data) {
         var data = resp_data.data;
-        const table = $('#participantsTable').DataTable({
+        tableParticipants = $('#participantsTable').DataTable({
           scrollX: true,
           data: data,
           columns: [

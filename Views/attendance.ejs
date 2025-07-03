@@ -9,7 +9,7 @@
       <div class="card-header container-fluid">
         <div class="row g-2 justify-content-between align-items-center">
           <div class="col-md-auto">
-            <h5 class="card-title mb-0">LIST ATTENDANCE</h5>
+            <h5 class="card-title mb-0">ATTENDANCE LIST</h5>
           </div>
           <div class="col-md-auto d-flex align-items-center gap-2" id="exportButtonContainer"></div>
         </div>
@@ -168,7 +168,7 @@
   
         $('#exportButtonContainer').append(eventFilterHtml + statusFilterHtml + `
         <button id="sendSurveyBtn" class="btn btn-soft-success ms-2">
-          <i class="ri-mail-send-line"></i> Kirim Email Survey
+          <i class="ri-mail-send-line"></i> Send Survey
         </button>
       `);
         
@@ -200,11 +200,11 @@
               },
               data: JSON.stringify({ event_id: selectedEventId }),
               success: function (data) {
-                Swal.fire('Berhasil!', data.message, 'success');
+                Swal.fire('Survey berhasil dikirim', data.message, 'success');
               },
               error: function (xhr, status, error) {
                 console.error(error);
-                Swal.fire('Error', 'Gagal mengirim email.', 'error');
+                Swal.fire('Error', 'Gagal mengirim survey.', 'error');
               }
             });
           }

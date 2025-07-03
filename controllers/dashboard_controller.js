@@ -149,11 +149,9 @@ exports.getSurveyDistribution = async (req, res) => {
 
       // Total puas = sangat puas + puas
       const totalPuas = satisfactionDistribution.sangatPuas + satisfactionDistribution.puas;
+      
       // Hitung CSAT
       const csat = (totalPuas / total) * 100;
-
-      // Cek hasil setelah loop
-      // console.log("Tidak Puas Results:", tidakPuasResults); // Debug: cek apakah ada hasil di sini
 
       res.status(200).json({
           success: true,
@@ -174,8 +172,10 @@ exports.getSurveyDistribution = async (req, res) => {
 };
 
 exports.getCSATForAllEvents = async (req, res) => {
+  const { event_id } = req.body;
   try {
-    // Query untuk mengambil data survey dari semua event
+    // Query untuk mengambil data survey dari semua even
+
     const result = await db.query(`
       SELECT 
         b.event_id, c.title,
@@ -186,9 +186,8 @@ exports.getCSATForAllEvents = async (req, res) => {
       FROM tbl_survey a
       JOIN tbl_participants b ON (a.participant_id = b.id)
       JOIN tbl_events c ON (b.event_id = c.id)
-      where b.event_id = 9
-    `);
-
+      where ($1::int = 0 OR b.event_id = $1::int)
+    `, [event_id]);
     // Objek untuk menyimpan distribusi kepuasan per event
     const eventCSAT = {};
 
@@ -199,7 +198,7 @@ exports.getCSATForAllEvents = async (req, res) => {
       
       if (!eventCSAT[eventId]) {
         eventCSAT[eventId] = {
-          title: row.title, // <-- Tambahkan title di sini
+          title: row.title,
           sangatPuas: 0,
           puas: 0,
           cukup: 0,
@@ -239,7 +238,7 @@ exports.getCSATForAllEvents = async (req, res) => {
 
       csatResults.push({
         event_id: eventId,
-        title: event.title, // <-- Sertakan title di sini
+        title: event.title,
         sangatPuas: event.sangatPuas,
         puas: event.puas,
         cukup: event.cukup,
@@ -296,7 +295,7 @@ exports.getParticipantsStatus = async (req, res) => {
     res.status(200).json({
       success: true,
       data: statusCounts,
-      participants: participantsResult.rows  // ⬅️ Tambahkan daftar peserta
+      participants: participantsResult.rows
     });
   } catch (error) {
     console.error('Error fetching participants status:', error);

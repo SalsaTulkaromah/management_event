@@ -146,7 +146,7 @@
 
             <div class="mb-3 input-group">
               <span class="input-group-text"><i class="fas fa-building"></i></span>
-              <input type="text" name="institution" class="form-control" placeholder="Institution" required>
+              <input type="text" name="company_name" class="form-control" placeholder="Company Name" required>
             </div>
 
             <div class="mb-3 input-group">
@@ -227,7 +227,7 @@
           text: 'Link registrasi tidak valid atau event sudah tidak tersedia.',
           confirmButtonText: 'Kembali'
         }).then(() => {
-          window.location.href = '/'; // arahkan kembali ke home atau halaman lain
+          window.location.href = '/register-event'; // arahkan kembali ke home atau halaman lain
         });
       }
     });
