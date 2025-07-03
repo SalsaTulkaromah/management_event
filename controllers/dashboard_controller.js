@@ -157,7 +157,7 @@ exports.getSurveyDistribution = async (req, res) => {
         
         // Hitung CSAT
         const csat = (totalPuas / total) * 100;
-
+        console.log(satisfactionDistribution.sangatPuas, satisfactionDistribution.puas, csat,total)
         res.status(200).json({
             success: true,
             chartData: chartData,
