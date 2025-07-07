@@ -156,12 +156,13 @@
 
             <div class="mb-3 input-group">
               <span class="input-group-text"><i class="fas fa-phone"></i></span>
-              <input type="text" name="phone" class="form-control" placeholder="Phone" required>
+              <input type="text" name="phone" class="form-control" placeholder="Your Phone" required>
             </div>
 
+            <label for="image" style="color: gray;">Your Profile Picture</label>
             <div class="mb-3 input-group">
               <span class="input-group-text"><i class="fas fa-image"></i></span>
-              <input type="file" name="image" class="form-control" accept="image/*">
+              <input type="file" name="image" class="form-control" required accept="image/*">
             </div>
 
             <div class="form-check mb-3">
@@ -187,7 +188,7 @@
 </html>
 
 <script>
-  const urlParams = new URLSearchParams(window.location.search);
+ const urlParams = new URLSearchParams(window.location.search);
   const eventGuid = urlParams.get('event');
 
   $(document).ready(function () {
@@ -218,7 +219,7 @@
         }
         // Jika valid, bisa tampilkan form (opsional)
         console.log("GUID valid, lanjutkan registrasi untuk event:", res.event.name);
-        $('#registerForm').show(); // pastikan form hidden dulu kalau perlu
+        $('#registerForm').show();
       } else {
         // Jika tidak valid, tampilkan alert dan redirect
         Swal.fire({

@@ -5,7 +5,7 @@ const crypto = require('crypto'); // untuk generate QR code
 dotenv.config({ path: "./config.env" });
 
 exports.registerEvent = async function (req, res) {
-    const { nama, institution, email, phone, event_guid } = req.body;
+    const { nama, company_name, email, phone, event_guid } = req.body;
     const image = req.files?.image;
 
     try {
@@ -44,7 +44,7 @@ exports.registerEvent = async function (req, res) {
         const result = await db.query(
             `INSERT INTO tbl_participants (name, company_name, email, phone, image, status, event_id)
              VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-            [nama, institution, email, phone, imageName, 'pending', event_id]
+            [nama, company_name, email, phone, imageName, 'pending', event_id]
         );
 
         // 6. Kirim QR Code via email (opsional)

@@ -74,7 +74,7 @@ exports.getParticipants = async function (req, res) {
 
     const mailOptions = {
       from: `"PT. Sindigilive Teknologi Kreatif" <${process.env.GMAIL_USER}>`,
-      to: "anggisaskia01@gmail.com",//participant.email,
+      to: participant.email,
       subject: 'Konfirmasi Persetujuan Pendaftaran Anda',
       html: `
         <p>Yth. <b>${participant.name}</b>,</p>
@@ -168,7 +168,7 @@ exports.rejectParticipant = async function (req, res) {
 
     const mailOptions = {
       from: `"PT. Sindigilive Teknologi Kreatif" <${process.env.GMAIL_USER}>`,
-      to: "anggisaskia01@gmail.com",//participant.email,
+      to: participant.email,
       subject: `Informasi Pendaftaran Acara ${eventTitle}`, // Subjek lebih dinamis
       html: `
         <p>Yth. <b>${participant.name}</b>,</p>
